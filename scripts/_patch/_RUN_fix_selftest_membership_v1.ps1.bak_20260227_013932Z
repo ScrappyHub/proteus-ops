@@ -1,0 +1,290 @@
+$ErrorActionPreference="Stop"
+Set-StrictMode -Version Latest
+function Die([string]$m){ throw $m }
+
+function Write-Utf8NoBomLf([string]$Path,[string]$Text){
+  $dir = Split-Path -Parent $Path
+  if($dir -and -not (Test-Path -LiteralPath $dir -PathType Container)){
+    New-Item -ItemType Directory -Force -Path $dir | Out-Null
+  }
+  $t = $Text -replace "`r`n","`n"
+  $t = $t -replace "`r","`n"
+  if(-not $t.EndsWith("`n")){ $t += "`n" }
+  $enc = New-Object System.Text.UTF8Encoding($false)
+  [System.IO.File]::WriteAllText($Path,$t,$enc)
+}
+
+function Parse-GateFile([string]$Path){
+  if(-not (Test-Path -LiteralPath $Path -PathType Leaf)){ Die ("MISSING_FILE: " + $Path) }
+  $tokens=$null; $errors=$null
+  [void][System.Management.Automation.Language.Parser]::ParseFile($Path,[ref]$tokens,[ref]$errors)
+  if($errors -and $errors.Count -gt 0){
+    $e=$errors[0]
+    Die ("PARSE_GATE_FAIL: " + $Path + " @ " + $e.Extent.StartLineNumber + ":" + $e.Extent.StartColumnNumber + " " + $e.Message)
+  }
+}
+
+$RepoRoot = (Resolve-Path -LiteralPath ".").Path
+
+$m022 = Join-Path $RepoRoot "migrations\022_selftest_add_org_member_v1.sql"
+$sqlLines = New-Object System.Collections.Generic.List[string]
+$null = $sqlLines.Add("begin;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("create or replace function pods.rpc_selftest_add_org_member_v1(")
+$null = $sqlLines.Add("  p_org_id uuid,")
+$null = $sqlLines.Add("  p_user_id uuid,")
+$null = $sqlLines.Add("  p_role text default 'owner'")
+$null = $sqlLines.Add(")")
+$null = $sqlLines.Add("returns void")
+$null = $sqlLines.Add("language plpgsql")
+$null = $sqlLines.Add("security definer")
+$null = $sqlLines.Add("set search_path = pods, public")
+$null = $sqlLines.Add("as $function$")
+$null = $sqlLines.Add("declare")
+$null = $sqlLines.Add("  v_has_role_key boolean := false;")
+$null = $sqlLines.Add("  v_has_role     boolean := false;")
+$null = $sqlLines.Add("  v_sql text;")
+$null = $sqlLines.Add("begin")
+$null = $sqlLines.Add("  if auth.role() is distinct from 'service_role' then")
+$null = $sqlLines.Add("    raise exception 'SERVICE_ROLE_REQUIRED';")
+$null = $sqlLines.Add("  end if;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("  select exists(")
+$null = $sqlLines.Add("    select 1 from information_schema.columns")
+$null = $sqlLines.Add("    where table_schema='pods' and table_name='org_members' and column_name='role_key'")
+$null = $sqlLines.Add("  ) into v_has_role_key;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("  select exists(")
+$null = $sqlLines.Add("    select 1 from information_schema.columns")
+$null = $sqlLines.Add("    where table_schema='pods' and table_name='org_members' and column_name='role'")
+$null = $sqlLines.Add("  ) into v_has_role;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("  if v_has_role_key then")
+$null = $sqlLines.Add("    v_sql := 'insert into pods.org_members(org_id, user_id, role_key) values ($1,$2,$3) on conflict do nothing';")
+$null = $sqlLines.Add("    execute v_sql using p_org_id, p_user_id, p_role;")
+$null = $sqlLines.Add("    return;")
+$null = $sqlLines.Add("  end if;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("  if v_has_role then")
+$null = $sqlLines.Add("    v_sql := 'insert into pods.org_members(org_id, user_id, role) values ($1,$2,$3) on conflict do nothing';")
+$null = $sqlLines.Add("    execute v_sql using p_org_id, p_user_id, p_role;")
+$null = $sqlLines.Add("    return;")
+$null = $sqlLines.Add("  end if;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("  v_sql := 'insert into pods.org_members(org_id, user_id) values ($1,$2) on conflict do nothing';")
+$null = $sqlLines.Add("  execute v_sql using p_org_id, p_user_id;")
+$null = $sqlLines.Add("end;")
+$null = $sqlLines.Add("$function$;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("revoke all on function pods.rpc_selftest_add_org_member_v1(uuid, uuid, text) from public;")
+$null = $sqlLines.Add("revoke all on function pods.rpc_selftest_add_org_member_v1(uuid, uuid, text) from anon;")
+$null = $sqlLines.Add("revoke all on function pods.rpc_selftest_add_org_member_v1(uuid, uuid, text) from authenticated;")
+$null = $sqlLines.Add("grant execute on function pods.rpc_selftest_add_org_member_v1(uuid, uuid, text) to service_role;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("create or replace function public.rpc_selftest_add_org_member_v1(")
+$null = $sqlLines.Add("  p_org_id uuid,")
+$null = $sqlLines.Add("  p_user_id uuid,")
+$null = $sqlLines.Add("  p_role text default 'owner'")
+$null = $sqlLines.Add(")")
+$null = $sqlLines.Add("returns void")
+$null = $sqlLines.Add("language sql")
+$null = $sqlLines.Add("security definer")
+$null = $sqlLines.Add("set search_path = pods, public")
+$null = $sqlLines.Add("as $sql$")
+$null = $sqlLines.Add("  select pods.rpc_selftest_add_org_member_v1(p_org_id, p_user_id, p_role);")
+$null = $sqlLines.Add("$sql$;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("revoke all on function public.rpc_selftest_add_org_member_v1(uuid, uuid, text) from public;")
+$null = $sqlLines.Add("revoke all on function public.rpc_selftest_add_org_member_v1(uuid, uuid, text) from anon;")
+$null = $sqlLines.Add("revoke all on function public.rpc_selftest_add_org_member_v1(uuid, uuid, text) from authenticated;")
+$null = $sqlLines.Add("grant execute on function public.rpc_selftest_add_org_member_v1(uuid, uuid, text) to service_role;")
+$null = $sqlLines.Add("")
+$null = $sqlLines.Add("commit;")
+$sql = (@($sqlLines.ToArray()) -join "`n") + "`n"
+Write-Utf8NoBomLf $m022 $sql
+Write-Host ("WROTE+SQL_UTF8_LF_OK: " + $m022) -ForegroundColor Green
+
+$js1 = Join-Path $RepoRoot "selftest_booking.js"
+$jsLines = New-Object System.Collections.Generic.List[string]
+$null = $jsLines.Add("import { createClient } from `"@supabase/supabase-js`";")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("const urlRaw = process.env.SUPABASE_URL;")
+$null = $jsLines.Add("const anonRaw = process.env.SUPABASE_ANON_KEY;")
+$null = $jsLines.Add("const serviceRaw = process.env.SUPABASE_SERVICE_ROLE_KEY;")
+$null = $jsLines.Add("const emailRaw = process.env.TEST_EMAIL;")
+$null = $jsLines.Add("const passwordRaw = process.env.TEST_PASSWORD;")
+$null = $jsLines.Add("const ORG_ID_RAW = process.env.ORG_ID;")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("function req(name, v) {")
+$null = $jsLines.Add("  if (!v || !String(v).trim()) throw new Error(`MISSING_ENV_${name}`);")
+$null = $jsLines.Add("  return String(v).trim();")
+$null = $jsLines.Add("}")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("async function rpc(supabase, fn, args) {")
+$null = $jsLines.Add("  const { data, error } = await supabase.rpc(fn, args);")
+$null = $jsLines.Add("  if (error) throw error;")
+$null = $jsLines.Add("  return data;")
+$null = $jsLines.Add("}")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("function pickInsideAvailabilityLocal() {")
+$null = $jsLines.Add("  const now = new Date();")
+$null = $jsLines.Add("  let startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0, 0);")
+$null = $jsLines.Add("  if (startLocal.getTime() <= now.getTime()) {")
+$null = $jsLines.Add("    startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 10, 0, 0, 0);")
+$null = $jsLines.Add("  }")
+$null = $jsLines.Add("  const endLocal = new Date(startLocal.getTime() + 60 * 60 * 1000);")
+$null = $jsLines.Add("  return { startLocal, endLocal };")
+$null = $jsLines.Add("}")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("async function main() {")
+$null = $jsLines.Add("  const url = req(`"SUPABASE_URL`", urlRaw).replace(/\/+$/, `"`");")
+$null = $jsLines.Add("  const anon = req(`"SUPABASE_ANON_KEY`", anonRaw);")
+$null = $jsLines.Add("  const service = req(`"SUPABASE_SERVICE_ROLE_KEY`", serviceRaw);")
+$null = $jsLines.Add("  const email = req(`"TEST_EMAIL`", emailRaw);")
+$null = $jsLines.Add("  const password = req(`"TEST_PASSWORD`", passwordRaw);")
+$null = $jsLines.Add("  const ORG_ID = req(`"ORG_ID`", ORG_ID_RAW);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const user = createClient(url, anon);")
+$null = $jsLines.Add("  const svc = createClient(url, service);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const { data: authData, error: authErr } = await user.auth.signInWithPassword({ email, password });")
+$null = $jsLines.Add("  if (authErr) throw authErr;")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const userId = authData.user.id;")
+$null = $jsLines.Add("  console.log(`"AUTH_OK user_id=`", userId);")
+$null = $jsLines.Add("  console.log(`"ORG_ID=`", ORG_ID);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  await rpc(svc, `"rpc_selftest_add_org_member_v1`", { p_org_id: ORG_ID, p_user_id: userId, p_role: `"owner`" });")
+$null = $jsLines.Add("  console.log(`"SELFTEST_MEMBERSHIP_OK`");")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  await rpc(user, `"rpc_selftest_reset_booking_v1`", { p_org_id: ORG_ID, p_staff_user_id: userId });")
+$null = $jsLines.Add("  console.log(`"SELFTEST_RESET_OK`");")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const { startLocal, endLocal } = pickInsideAvailabilityLocal();")
+$null = $jsLines.Add("  const dow = startLocal.getDay();")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const ruleId = await rpc(user, `"rpc_upsert_availability_rule_v1`", {")
+$null = $jsLines.Add("    p_org_id: ORG_ID, p_rule_id: null, p_staff_user_id: userId, p_location_id: null,")
+$null = $jsLines.Add("    p_day_of_week: dow, p_start_time: `"09:00:00`", p_end_time: `"17:00:00`", p_is_active: true,")
+$null = $jsLines.Add("  });")
+$null = $jsLines.Add("  console.log(`"AVAILABILITY_OK rule_id=`", ruleId, `"dow=`", dow);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const apptId1 = await rpc(user, `"rpc_create_appointment_v1`", {")
+$null = $jsLines.Add("    p_org_id: ORG_ID, p_staff_user_id: userId,")
+$null = $jsLines.Add("    p_start_time: startLocal.toISOString(), p_end_time: endLocal.toISOString(),")
+$null = $jsLines.Add("    p_service_id: null, p_location_id: null,")
+$null = $jsLines.Add("    p_guest_name: `"Guest One`", p_guest_email: `"guest@example.com`", p_guest_phone: `"555-0100`",")
+$null = $jsLines.Add("    p_notes: `"selftest:booking`",")
+$null = $jsLines.Add("  });")
+$null = $jsLines.Add("  console.log(`"APPOINTMENT_CREATE_OK appointment_id=`", apptId1);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  try {")
+$null = $jsLines.Add("    await rpc(user, `"rpc_create_appointment_v1`", {")
+$null = $jsLines.Add("      p_org_id: ORG_ID, p_staff_user_id: userId,")
+$null = $jsLines.Add("      p_start_time: startLocal.toISOString(), p_end_time: endLocal.toISOString(),")
+$null = $jsLines.Add("      p_service_id: null, p_location_id: null,")
+$null = $jsLines.Add("      p_guest_name: `"Guest Two`", p_guest_email: `"guest2@example.com`", p_guest_phone: `"555-0101`",")
+$null = $jsLines.Add("      p_notes: `"selftest:overlap`",")
+$null = $jsLines.Add("    });")
+$null = $jsLines.Add("    console.log(`"OVERLAP_TEST_UNEXPECTED_OK`");")
+$null = $jsLines.Add("    process.exit(2);")
+$null = $jsLines.Add("  } catch (e) {")
+$null = $jsLines.Add("    console.log(`"OVERLAP_TEST_EXPECTED_FAIL token=`", e?.message || String(e));")
+$null = $jsLines.Add("  }")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const startTO = new Date(endLocal.getTime() + 30 * 60 * 1000);")
+$null = $jsLines.Add("  const endTO = new Date(startTO.getTime() + 60 * 60 * 1000);")
+$null = $jsLines.Add("  const startOff = new Date(startTO.getTime() - 15 * 60 * 1000);")
+$null = $jsLines.Add("  const endOff = new Date(endTO.getTime() + 15 * 60 * 1000);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  const blockId = await rpc(user, `"rpc_add_time_off_block_v1`", {")
+$null = $jsLines.Add("    p_org_id: ORG_ID, p_staff_user_id: userId,")
+$null = $jsLines.Add("    p_start_time: startOff.toISOString(), p_end_time: endOff.toISOString(),")
+$null = $jsLines.Add("    p_reason: `"selftest:timeoff`",")
+$null = $jsLines.Add("  });")
+$null = $jsLines.Add("  console.log(`"TIMEOFF_OK block_id=`", blockId);")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  try {")
+$null = $jsLines.Add("    await rpc(user, `"rpc_create_appointment_v1`", {")
+$null = $jsLines.Add("      p_org_id: ORG_ID, p_staff_user_id: userId,")
+$null = $jsLines.Add("      p_start_time: startTO.toISOString(), p_end_time: endTO.toISOString(),")
+$null = $jsLines.Add("      p_service_id: null, p_location_id: null,")
+$null = $jsLines.Add("      p_guest_name: `"Guest Three`", p_guest_email: `"guest3@example.com`", p_guest_phone: `"555-0102`",")
+$null = $jsLines.Add("      p_notes: `"selftest:timeoff-test`",")
+$null = $jsLines.Add("    });")
+$null = $jsLines.Add("    console.log(`"TIMEOFF_TEST_UNEXPECTED_OK`");")
+$null = $jsLines.Add("    process.exit(3);")
+$null = $jsLines.Add("  } catch (e) {")
+$null = $jsLines.Add("    console.log(`"TIMEOFF_TEST_EXPECTED_FAIL token=`", e?.message || String(e));")
+$null = $jsLines.Add("  }")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("  console.log(`"SELFTEST_DONE`");")
+$null = $jsLines.Add("  await sleep(25);")
+$null = $jsLines.Add("}")
+$null = $jsLines.Add("")
+$null = $jsLines.Add("main().catch(async (e) => {")
+$null = $jsLines.Add("  console.error(`"SELFTEST_FATAL:`", e);")
+$null = $jsLines.Add("  await sleep(25);")
+$null = $jsLines.Add("  process.exit(1);")
+$null = $jsLines.Add("});")
+$js = (@($jsLines.ToArray()) -join "`n") + "`n"
+Write-Utf8NoBomLf $js1 $js
+Write-Host ("WROTE+JS_UTF8_LF_OK: " + $js1) -ForegroundColor Green
+
+$run = Join-Path $RepoRoot "scripts\selftest_all.ps1"
+$ps = @'
+$ErrorActionPreference="Stop"
+Set-StrictMode -Version Latest
+function Die([string]$m){ throw $m }
+
+function NeedEnv([string]$k){
+  $v=[Environment]::GetEnvironmentVariable($k,"Process")
+  if([string]::IsNullOrWhiteSpace($v)){ Die ("MISSING_ENV_" + $k) }
+  return $v.Trim()
+}
+
+$RepoRoot = (Resolve-Path -LiteralPath ".").Path
+$node = (Get-Command node.exe -ErrorAction Stop).Source
+$url = (NeedEnv "SUPABASE_URL").TrimEnd("/")
+$anon = NeedEnv "SUPABASE_ANON_KEY"
+$svc  = NeedEnv "SUPABASE_SERVICE_ROLE_KEY"
+[void](NeedEnv "TEST_EMAIL")
+[void](NeedEnv "TEST_PASSWORD")
+[void](NeedEnv "ORG_ID")
+
+if($anon -notmatch '^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$'){ Die "SUPABASE_ANON_KEY_NOT_JWT" }
+if($svc  -notmatch '^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$'){ Die "SUPABASE_SERVICE_ROLE_KEY_NOT_JWT" }
+
+function PreflightKey([string]$name,[string]$key){
+  try{
+    $h = @{ apikey=$key; Authorization=("Bearer " + $key) }
+    $r = Invoke-WebRequest -UseBasicParsing -Method Get -Uri ($url + "/rest/v1/") -Headers $h -TimeoutSec 15
+    if($r.StatusCode -eq 401){ Die ($name + "_INVALID_FOR_URL") }
+  }catch{
+    $m = $_.Exception.Message
+    if($m -match '401'){ Die ($name + "_INVALID_FOR_URL") }
+  }
+}
+
+PreflightKey "SUPABASE_ANON_KEY" $anon
+PreflightKey "SUPABASE_SERVICE_ROLE_KEY" $svc
+
+function RunNode([string]$rel){
+  $p = Join-Path $RepoRoot $rel
+  if(-not (Test-Path -LiteralPath $p -PathType Leaf)){ Die ("MISSING_FILE: " + $p) }
+  Write-Host ("RUN: node " + $rel) -ForegroundColor Cyan
+  & $node $p | Out-Host
+  if($LASTEXITCODE -ne 0){ Die ("NODE_FAIL: " + $rel + " exit=" + $LASTEXITCODE) }
+}
+
+RunNode "selftest_booking.js"
+RunNode "selftest_booking_disabled.js"
+Write-Host "FULL_GREEN_SELFTEST_OK" -ForegroundColor Green
+'@
+Write-Utf8NoBomLf $run $ps
+Parse-GateFile $run
+Write-Host ("WROTE+RUNNER_PARSE_OK: " + $run) -ForegroundColor Green
+
+Write-Host "PATCH_MEMBERSHIP_V1_OK" -ForegroundColor Green

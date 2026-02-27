@@ -1,0 +1,123 @@
+import { createClient } from "@supabase/supabase-js";
+
+const urlRaw = process.env.SUPABASE_URL;
+const anonRaw = process.env.SUPABASE_ANON_KEY;
+const serviceRaw = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const emailRaw = process.env.TEST_EMAIL;
+const passwordRaw = process.env.TEST_PASSWORD;
+const ORG_ID_RAW = process.env.ORG_ID;
+
+function req(name, v) {
+  if (!v || !String(v).trim()) throw new Error(MISSING_ENV_${name});
+  return String(v).trim();
+}
+
+async function rpc(supabase, fn, args) {
+  const { data, error } = await supabase.rpc(fn, args);
+  if (error) throw error;
+  return data;
+}
+
+function pickInsideAvailabilityLocal() {
+  const now = new Date();
+  let startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0, 0);
+  if (startLocal.getTime() <= now.getTime()) {
+    startLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 10, 0, 0, 0);
+  }
+  const endLocal = new Date(startLocal.getTime() + 60 * 60 * 1000);
+  return { startLocal, endLocal };
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+async function main() {
+  const url = req("SUPABASE_URL", urlRaw).replace(/\/+$/, "");
+  const anon = req("SUPABASE_ANON_KEY", anonRaw);
+  const service = req("SUPABASE_SERVICE_ROLE_KEY", serviceRaw);
+  const email = req("TEST_EMAIL", emailRaw);
+  const password = req("TEST_PASSWORD", passwordRaw);
+  const ORG_ID = req("ORG_ID", ORG_ID_RAW);
+
+  const user = createClient(url, anon);
+  const svc = createClient(url, service);
+
+  const { data: authData, error: authErr } = await user.auth.signInWithPassword({ email, password });
+  if (authErr) throw authErr;
+
+  const userId = authData.user.id;
+  console.log("AUTH_OK user_id=", userId);
+  console.log("ORG_ID=", ORG_ID);
+
+  await rpc(svc, "rpc_selftest_add_org_member_v1", { p_org_id: ORG_ID, p_user_id: userId, p_role: "owner" });
+  console.log("SELFTEST_MEMBERSHIP_OK");
+
+  await rpc(user, "rpc_selftest_reset_booking_v1", { p_org_id: ORG_ID, p_staff_user_id: userId });
+  console.log("SELFTEST_RESET_OK");
+
+  const { startLocal, endLocal } = pickInsideAvailabilityLocal();
+  const dow = startLocal.getDay();
+
+  const ruleId = await rpc(user, "rpc_upsert_availability_rule_v1", {
+    p_org_id: ORG_ID, p_rule_id: null, p_staff_user_id: userId, p_location_id: null,
+    p_day_of_week: dow, p_start_time: "09:00:00", p_end_time: "17:00:00", p_is_active: true,
+  });
+  console.log("AVAILABILITY_OK rule_id=", ruleId, "dow=", dow);
+
+  const apptId1 = await rpc(user, "rpc_create_appointment_v1", {
+    p_org_id: ORG_ID, p_staff_user_id: userId,
+    p_start_time: startLocal.toISOString(), p_end_time: endLocal.toISOString(),
+    p_service_id: null, p_location_id: null,
+    p_guest_name: "Guest One", p_guest_email: "guest@example.com", p_guest_phone: "555-0100",
+    p_notes: "selftest:booking",
+  });
+  console.log("APPOINTMENT_CREATE_OK appointment_id=", apptId1);
+
+  try {
+    await rpc(user, "rpc_create_appointment_v1", {
+      p_org_id: ORG_ID, p_staff_user_id: userId,
+      p_start_time: startLocal.toISOString(), p_end_time: endLocal.toISOString(),
+      p_service_id: null, p_location_id: null,
+      p_guest_name: "Guest Two", p_guest_email: "guest2@example.com", p_guest_phone: "555-0101",
+      p_notes: "selftest:overlap",
+    });
+    console.log("OVERLAP_TEST_UNEXPECTED_OK");
+    process.exit(2);
+  } catch (e) {
+    console.log("OVERLAP_TEST_EXPECTED_FAIL token=", e?.message || String(e));
+  }
+
+  const startTO = new Date(endLocal.getTime() + 30 * 60 * 1000);
+  const endTO = new Date(startTO.getTime() + 60 * 60 * 1000);
+  const startOff = new Date(startTO.getTime() - 15 * 60 * 1000);
+  const endOff = new Date(endTO.getTime() + 15 * 60 * 1000);
+
+  const blockId = await rpc(user, "rpc_add_time_off_block_v1", {
+    p_org_id: ORG_ID, p_staff_user_id: userId,
+    p_start_time: startOff.toISOString(), p_end_time: endOff.toISOString(),
+    p_reason: "selftest:timeoff",
+  });
+  console.log("TIMEOFF_OK block_id=", blockId);
+
+  try {
+    await rpc(user, "rpc_create_appointment_v1", {
+      p_org_id: ORG_ID, p_staff_user_id: userId,
+      p_start_time: startTO.toISOString(), p_end_time: endTO.toISOString(),
+      p_service_id: null, p_location_id: null,
+      p_guest_name: "Guest Three", p_guest_email: "guest3@example.com", p_guest_phone: "555-0102",
+      p_notes: "selftest:timeoff-test",
+    });
+    console.log("TIMEOFF_TEST_UNEXPECTED_OK");
+    process.exit(3);
+  } catch (e) {
+    console.log("TIMEOFF_TEST_EXPECTED_FAIL token=", e?.message || String(e));
+  }
+
+  console.log("SELFTEST_DONE");
+  await sleep(25);
+}
+
+main().catch(async (e) => {
+  console.error("SELFTEST_FATAL:", e);
+  await sleep(25);
+  process.exit(1);
+});

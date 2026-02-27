@@ -1,0 +1,107 @@
+begin;
+
+alter table pods.booking_customers enable row level security;
+alter table pods.booking_availability_rules enable row level security;
+alter table pods.booking_time_off_blocks enable row level security;
+alter table pods.booking_appointments enable row level security;
+alter table pods.booking_appointment_status_log enable row level security;
+
+-- READ rules
+-- Customers: org members can read (owner/admin/staff). Customers can read their own later if you attach user_id.
+create policy booking_customers_read
+on pods.booking_customers
+for select to authenticated
+using (
+  exists (
+    select 1 from pods.org_members m
+    where m.org_id = pods.booking_customers.org_id
+      and m.user_id = auth.uid()
+      and m.role_key in ('owner','admin','staff')
+  )
+);
+
+create policy booking_availability_read
+on pods.booking_availability_rules
+for select to authenticated
+using (
+  exists (
+    select 1 from pods.org_members m
+    where m.org_id = pods.booking_availability_rules.org_id
+      and m.user_id = auth.uid()
+      and m.role_key in ('owner','admin','staff')
+  )
+);
+
+create policy booking_timeoff_read
+on pods.booking_time_off_blocks
+for select to authenticated
+using (
+  exists (
+    select 1 from pods.org_members m
+    where m.org_id = pods.booking_time_off_blocks.org_id
+      and m.user_id = auth.uid()
+      and m.role_key in ('owner','admin','staff')
+  )
+);
+
+-- Appointments: owner/admin see all; staff see their own
+create policy booking_appointments_read
+on pods.booking_appointments
+for select to authenticated
+using (
+  exists (
+    select 1 from pods.org_members m
+    where m.org_id = pods.booking_appointments.org_id
+      and m.user_id = auth.uid()
+      and m.role_key in ('owner','admin')
+  )
+  or (
+    pods.booking_appointments.staff_user_id = auth.uid()
+    and exists (
+      select 1 from pods.org_members m2
+      where m2.org_id = pods.booking_appointments.org_id
+        and m2.user_id = auth.uid()
+        and m2.role_key = 'staff'
+    )
+  )
+);
+
+create policy booking_appt_status_read
+on pods.booking_appointment_status_log
+for select to authenticated
+using (
+  exists (
+    select 1 from pods.org_members m
+    where m.org_id = pods.booking_appointment_status_log.org_id
+      and m.user_id = auth.uid()
+      and m.role_key in ('owner','admin','staff')
+  )
+);
+
+-- NO DIRECT WRITES (RPC-only)
+create policy booking_customers_no_write
+on pods.booking_customers
+for insert, update, delete to authenticated
+using (false) with check (false);
+
+create policy booking_availability_no_write
+on pods.booking_availability_rules
+for insert, update, delete to authenticated
+using (false) with check (false);
+
+create policy booking_timeoff_no_write
+on pods.booking_time_off_blocks
+for insert, update, delete to authenticated
+using (false) with check (false);
+
+create policy booking_appointments_no_write
+on pods.booking_appointments
+for insert, update, delete to authenticated
+using (false) with check (false);
+
+create policy booking_appt_status_no_write
+on pods.booking_appointment_status_log
+for insert, update, delete to authenticated
+using (false) with check (false);
+
+commit;

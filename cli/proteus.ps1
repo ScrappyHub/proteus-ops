@@ -183,18 +183,46 @@ switch($Command){
       p_provider_readiness_rollup_id = $ProviderReadinessRollupId
     }
 
+    $worker = [ordered]@{
+      ok = $false
+      token = "PROTEUSOPS_CLI_LAUNCH_WORKER_SKIPPED"
+      reason = "launch_control_rpc_failed"
+    }
+
+    if($launchControl.ok -and $null -ne $launchControl.response){
+      $launchControlReceiptId = ""
+      if($launchControl.response.PSObject.Properties.Name -contains "launch_control_receipt_id"){
+        $launchControlReceiptId = [string]$launchControl.response.launch_control_receipt_id
+      }
+
+      if(-not [string]::IsNullOrWhiteSpace($launchControlReceiptId)){
+        $worker = Invoke-ProteusRpc -ConfigPath $Config -RpcName "rpc_queue_launch_execution_worker_v1" -Body @{
+          p_launch_control_receipt_id = $launchControlReceiptId
+        }
+      }
+      else {
+        $worker = [ordered]@{
+          ok = $false
+          token = "PROTEUSOPS_CLI_LAUNCH_WORKER_SKIPPED"
+          reason = "launch_control_receipt_id_missing"
+        }
+      }
+    }
+
     $receipt = [ordered]@{
-      ok = ($handoff.ok -and $launchControl.ok)
-      token = "PROTEUSOPS_CLI_LAUNCH_SEQUENCE_OK"
+      ok = ($handoff.ok -and $launchControl.ok -and $worker.ok)
+      token = "PROTEUSOPS_CLI_LAUNCH_WORKER_SEQUENCE_OK"
       model = $Model
       org_id = $OrgId
       handoff = $handoff.response
       launch_control = $launchControl.response
+      worker = $worker.response
+      worker_rpc = $worker
     }
 
     if($Json){ Write-ProteusJson $receipt; return }
 
-    Show-Human "Launch" "Launch handoff and control-plane receipt RPCs completed."
+    Show-Human "Launch" "Launch handoff, control-plane receipt, and worker queue RPCs completed."
     Write-ProteusJson $receipt
     return
   }

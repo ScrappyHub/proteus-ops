@@ -7,6 +7,10 @@ param(
   [string]$OrgId = "",
   [string]$Config = ".\proteus.config.json",
   [string]$RpcName = "",
+  [string]$WizardSessionId = "",
+  [string]$PlanRunId = "",
+  [string]$DeploymentReceiptId = "",
+  [string]$ProviderReadinessRollupId = "",
   [switch]$Json
 )
 
@@ -120,12 +124,53 @@ switch($Command){
   }
 
   "launch" {
-    $receipt = New-ProteusReceipt "PROTEUSOPS_CLI_LAUNCH_PENDING_OK" @{
-      status = "pending_launch_wiring"
-      next = "wire launch-control + worker RPC sequence"
+    if([string]::IsNullOrWhiteSpace($OrgId)){
+      throw "PROTEUS_LAUNCH_ORG_REQUIRED"
     }
+
+    if([string]::IsNullOrWhiteSpace($WizardSessionId)){
+      throw "PROTEUS_LAUNCH_WIZARD_SESSION_REQUIRED"
+    }
+
+    if([string]::IsNullOrWhiteSpace($PlanRunId)){
+      throw "PROTEUS_LAUNCH_PLAN_RUN_REQUIRED"
+    }
+
+    if([string]::IsNullOrWhiteSpace($DeploymentReceiptId)){
+      throw "PROTEUS_LAUNCH_DEPLOYMENT_RECEIPT_REQUIRED"
+    }
+
+    if([string]::IsNullOrWhiteSpace($ProviderReadinessRollupId)){
+      throw "PROTEUS_LAUNCH_PROVIDER_READINESS_REQUIRED"
+    }
+
+    $handoff = Invoke-ProteusRpc -ConfigPath $Config -RpcName "rpc_emit_customer_deployment_handoff_v1" -Body @{
+      p_org_id = $OrgId
+      p_model_key = $Model
+      p_model_version = "v1"
+    }
+
+    $launchControl = Invoke-ProteusRpc -ConfigPath $Config -RpcName "rpc_emit_launch_control_plane_receipt_v1" -Body @{
+      p_org_id = $OrgId
+      p_wizard_session_id = $WizardSessionId
+      p_plan_run_id = $PlanRunId
+      p_deployment_receipt_id = $DeploymentReceiptId
+      p_provider_readiness_rollup_id = $ProviderReadinessRollupId
+    }
+
+    $receipt = [ordered]@{
+      ok = ($handoff.ok -and $launchControl.ok)
+      token = "PROTEUSOPS_CLI_LAUNCH_SEQUENCE_OK"
+      model = $Model
+      org_id = $OrgId
+      handoff = $handoff.response
+      launch_control = $launchControl.response
+    }
+
     if($Json){ Write-ProteusJson $receipt; return }
-    Show-Human "Launch" "Launch RPC sequence comes next."
+
+    Show-Human "Launch" "Launch handoff and control-plane receipt RPCs completed."
+    Write-ProteusJson $receipt
     return
   }
 

@@ -124,24 +124,49 @@ switch($Command){
   }
 
   "launch" {
+    $missing = @()
+
     if([string]::IsNullOrWhiteSpace($OrgId)){
-      throw "PROTEUS_LAUNCH_ORG_REQUIRED"
+      $missing += "OrgId"
     }
 
     if([string]::IsNullOrWhiteSpace($WizardSessionId)){
-      throw "PROTEUS_LAUNCH_WIZARD_SESSION_REQUIRED"
+      $missing += "WizardSessionId"
     }
 
     if([string]::IsNullOrWhiteSpace($PlanRunId)){
-      throw "PROTEUS_LAUNCH_PLAN_RUN_REQUIRED"
+      $missing += "PlanRunId"
     }
 
     if([string]::IsNullOrWhiteSpace($DeploymentReceiptId)){
-      throw "PROTEUS_LAUNCH_DEPLOYMENT_RECEIPT_REQUIRED"
+      $missing += "DeploymentReceiptId"
     }
 
     if([string]::IsNullOrWhiteSpace($ProviderReadinessRollupId)){
-      throw "PROTEUS_LAUNCH_PROVIDER_READINESS_REQUIRED"
+      $missing += "ProviderReadinessRollupId"
+    }
+
+    if($missing.Count -gt 0){
+      $receipt = [ordered]@{
+        ok = $false
+        token = "PROTEUSOPS_CLI_LAUNCH_ARGUMENT_GATE_OK"
+        status = "missing_required_arguments"
+        missing = $missing
+        usage = "proteus launch -OrgId <uuid> -WizardSessionId <uuid> -PlanRunId <uuid> -DeploymentReceiptId <uuid> -ProviderReadinessRollupId <uuid>"
+      }
+
+      if($Json){
+        Write-ProteusJson $receipt
+        return
+      }
+
+      Show-Human "Launch" "Missing required arguments."
+      foreach($m in $missing){
+        Write-Host ("- " + $m)
+      }
+      Write-Host ""
+      Write-Host $receipt.usage
+      return
     }
 
     $handoff = Invoke-ProteusRpc -ConfigPath $Config -RpcName "rpc_emit_customer_deployment_handoff_v1" -Body @{

@@ -1,0 +1,6 @@
+{
+  "supabase_url": "https://YOUR_PROJECT.supabase.co",
+  "service_role_key": "",
+  "anon_key": "",
+  "default_model": "DEVELOPER_PORTAL_V1"
+}

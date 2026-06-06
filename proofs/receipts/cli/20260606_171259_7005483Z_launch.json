@@ -1,0 +1,13 @@
+{
+    "ok":  false,
+    "token":  "PROTEUSOPS_CLI_LAUNCH_ARGUMENT_GATE_OK",
+    "status":  "missing_required_arguments",
+    "missing":  [
+                    "OrgId",
+                    "WizardSessionId",
+                    "PlanRunId",
+                    "DeploymentReceiptId",
+                    "ProviderReadinessRollupId"
+                ],
+    "usage":  "proteus launch -OrgId \u003cuuid\u003e -WizardSessionId \u003cuuid\u003e -PlanRunId \u003cuuid\u003e -DeploymentReceiptId \u003cuuid\u003e -ProviderReadinessRollupId \u003cuuid\u003e"
+}

@@ -40,13 +40,53 @@ function Show-Human([string]$Title,[string]$Message){
   Write-Host $Message
   Write-Host ""
 }
+function Ensure-ProteusDir([string]$Path){
+  if([string]::IsNullOrWhiteSpace($Path)){ throw "PROTEUS_DIR_EMPTY" }
+  if(!(Test-Path -LiteralPath $Path -PathType Container)){
+    New-Item -ItemType Directory -Force -Path $Path | Out-Null
+  }
+}
+
+function Export-ProteusCliReceipt([object]$Receipt,[string]$CommandName){
+  $repoRoot = Split-Path -Parent $ScriptRoot
+  $receiptDir = Join-Path $repoRoot "proofs\receipts\cli"
+  Ensure-ProteusDir $receiptDir
+
+  $utc = [DateTime]::UtcNow.ToString("yyyyMMdd_HHmmss_fffffffZ")
+  $safeCommand = ($CommandName -replace '[^A-Za-z0-9_\-]','_')
+  $path = Join-Path $receiptDir ($utc + "_" + $safeCommand + ".json")
+
+  $json = $Receipt | ConvertTo-Json -Depth 60
+  $json = $json -replace "`r`n","`n"
+  $json = $json -replace "`r","`n"
+  if(!$json.EndsWith("`n")){ $json += "`n" }
+
+  [IO.File]::WriteAllText($path,$json,[Text.UTF8Encoding]::new($false))
+
+  return $path
+}
+
+function Write-ProteusCliResult([object]$Receipt,[string]$CommandName,[switch]$AsJson){
+  $receiptPath = Export-ProteusCliReceipt -Receipt $Receipt -CommandName $CommandName
+
+  if($Receipt -is [System.Collections.IDictionary]){
+    $Receipt["cli_receipt_path"] = $receiptPath
+  }
+
+  if($AsJson){
+    Write-ProteusJson $Receipt
+  }
+  else {
+    Write-Host ("CLI_RECEIPT: " + $receiptPath) -ForegroundColor DarkGray
+  }
+}
 
 switch($Command){
   "help" {
     $receipt = New-ProteusReceipt "PROTEUSOPS_CLI_HELP_OK" @{
       commands = @("setup","models","verify","launch","rollback","receipts","rpc")
     }
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
     Show-Human "ProteusOps CLI" "Commands: setup, models, verify, launch, rollback, receipts, rpc"
     return
   }
@@ -55,7 +95,7 @@ switch($Command){
     $receipt = New-ProteusReceipt "PROTEUSOPS_CLI_MODELS_OK" @{
       models = @("BARBER_NAIL_V1","CONTRACTOR_V1","REAL_ESTATE_V1","DEVELOPER_PORTAL_V1")
     }
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
     Show-Human "Available Models" "Pick one supported operational model."
     foreach($m in $receipt.data.models){ Write-Host ("- " + $m) }
     return
@@ -67,7 +107,7 @@ switch($Command){
       config = $Config
       next = @("copy proteus.config.example.json to proteus.config.json","fill Supabase URL/key","run proteus verify")
     }
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
     Show-Human "Setup" ("Model selected: " + $Model)
     foreach($n in $receipt.data.next){ Write-Host ("- " + $n) }
     return
@@ -86,7 +126,7 @@ switch($Command){
         status = "needs_org_id"
         usage = "proteus verify -OrgId <uuid>"
       }
-      if($Json){ Write-ProteusJson $receipt; return }
+      if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
       Show-Human "Verify" "Provide -OrgId <uuid> to run live Supabase RPC verification."
       return
     }
@@ -116,7 +156,7 @@ switch($Command){
       security_gates = $gate.response
     }
 
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
 
     Show-Human "Verify" "Live Supabase RPC verification completed."
     Write-ProteusJson $receipt
@@ -156,7 +196,7 @@ switch($Command){
       }
 
       if($Json){
-        Write-ProteusJson $receipt
+        Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson
         return
       }
 
@@ -220,7 +260,7 @@ switch($Command){
       worker_rpc = $worker
     }
 
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
 
     Show-Human "Launch" "Launch handoff, control-plane receipt, and worker queue RPCs completed."
     Write-ProteusJson $receipt
@@ -231,7 +271,7 @@ switch($Command){
     $receipt = New-ProteusReceipt "PROTEUSOPS_CLI_ROLLBACK_PENDING_OK" @{
       status = "pending_rollback_wiring"
     }
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
     Show-Human "Rollback" "Rollback RPC sequence comes next."
     return
   }
@@ -245,7 +285,7 @@ switch($Command){
         "PROTEUSOPS_STRESS_HARNESS_OK"
       )
     }
-    if($Json){ Write-ProteusJson $receipt; return }
+    if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
     Show-Human "Receipts" "Known platform receipt tokens."
     foreach($t in $receipt.data.tokens){ Write-Host ("- " + $t) }
     return

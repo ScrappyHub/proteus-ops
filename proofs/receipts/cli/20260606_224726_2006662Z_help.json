@@ -1,0 +1,16 @@
+{
+    "ok":  true,
+    "token":  "PROTEUSOPS_CLI_HELP_OK",
+    "utc":  "2026-06-06T22:47:26.1771409Z",
+    "data":  {
+                 "commands":  [
+                                  "setup",
+                                  "models",
+                                  "verify",
+                                  "launch",
+                                  "rollback",
+                                  "receipts",
+                                  "rpc"
+                              ]
+             }
+}

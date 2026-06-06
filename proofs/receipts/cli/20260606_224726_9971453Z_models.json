@@ -1,0 +1,13 @@
+{
+    "ok":  true,
+    "token":  "PROTEUSOPS_CLI_MODELS_OK",
+    "utc":  "2026-06-06T22:47:26.9756321Z",
+    "data":  {
+                 "models":  [
+                                "BARBER_NAIL_V1",
+                                "CONTRACTOR_V1",
+                                "REAL_ESTATE_V1",
+                                "DEVELOPER_PORTAL_V1"
+                            ]
+             }
+}

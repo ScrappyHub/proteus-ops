@@ -1,0 +1,14 @@
+{
+    "ok":  true,
+    "token":  "PROTEUSOPS_CLI_SETUP_OK",
+    "utc":  "2026-06-06T22:47:27.6329079Z",
+    "data":  {
+                 "config":  ".\\proteus.config.json",
+                 "model":  "DEVELOPER_PORTAL_V1",
+                 "next":  [
+                              "copy proteus.config.example.json to proteus.config.json",
+                              "fill Supabase URL/key",
+                              "run proteus verify"
+                          ]
+             }
+}

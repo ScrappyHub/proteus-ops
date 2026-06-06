@@ -15,22 +15,29 @@ function Ensure-Dir([string]$Path){
   }
 }
 
-function Invoke-CliJson([string[]]$Args){
-  $out = & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $Cli @Args 2>&1
+function Invoke-CliJson([string]$CommandName){
+  $out = & powershell.exe `
+    -NoProfile `
+    -NonInteractive `
+    -ExecutionPolicy Bypass `
+    -File $Cli `
+    -Command $CommandName `
+    -Json 2>&1
+
   if($LASTEXITCODE -ne 0){
-    Die ("CLI_COMMAND_FAILED: " + ($Args -join " ") + "`n" + ($out | Out-String))
+    Die ("CLI_COMMAND_FAILED: " + $CommandName + "`n" + ($out | Out-String))
   }
 
   $raw = ($out | Out-String).Trim()
   if([string]::IsNullOrWhiteSpace($raw)){
-    Die ("CLI_EMPTY_OUTPUT: " + ($Args -join " "))
+    Die ("CLI_EMPTY_OUTPUT: " + $CommandName)
   }
 
   $start = $raw.IndexOf("{")
   $end = $raw.LastIndexOf("}")
 
   if($start -lt 0 -or $end -lt $start){
-    Die ("CLI_JSON_NOT_FOUND: " + ($Args -join " ") + "`n" + $raw)
+    Die ("CLI_JSON_NOT_FOUND: " + $CommandName + "`n" + $raw)
   }
 
   $json = $raw.Substring($start, $end - $start + 1)
@@ -50,22 +57,22 @@ if(!(Test-Path -LiteralPath $ConfigExample -PathType Leaf)){ Die "CONFIG_EXAMPLE
 
 Ensure-Dir $ReceiptDir
 
-$help = Invoke-CliJson @("help","-Json")
+$help = Invoke-CliJson "help"
 Assert-Token $help "PROTEUSOPS_CLI_HELP_OK"
 
-$models = Invoke-CliJson @("models","-Json")
+$models = Invoke-CliJson "models"
 Assert-Token $models "PROTEUSOPS_CLI_MODELS_OK"
 
-$setup = Invoke-CliJson @("setup","-Json")
+$setup = Invoke-CliJson "setup"
 Assert-Token $setup "PROTEUSOPS_CLI_SETUP_OK"
 
-$verify = Invoke-CliJson @("verify","-Json")
+$verify = Invoke-CliJson "verify"
 Assert-Token $verify "PROTEUSOPS_CLI_VERIFY_NEEDS_ORG_OK"
 
-$launch = Invoke-CliJson @("launch","-Json")
+$launch = Invoke-CliJson "launch"
 Assert-Token $launch "PROTEUSOPS_CLI_LAUNCH_ARGUMENT_GATE_OK"
 
-$receipts = Invoke-CliJson @("receipts","-Json")
+$receipts = Invoke-CliJson "receipts"
 Assert-Token $receipts "PROTEUSOPS_CLI_RECEIPTS_OK"
 
 $receiptPaths = @(

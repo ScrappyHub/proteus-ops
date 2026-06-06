@@ -1,0 +1,9 @@
+{
+    "ok":  true,
+    "token":  "PROTEUSOPS_CLI_VERIFY_NEEDS_ORG_OK",
+    "utc":  "2026-06-06T22:47:28.2175062Z",
+    "data":  {
+                 "usage":  "proteus verify -OrgId \u003cuuid\u003e",
+                 "status":  "needs_org_id"
+             }
+}

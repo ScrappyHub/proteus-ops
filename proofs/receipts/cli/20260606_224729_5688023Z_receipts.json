@@ -1,0 +1,13 @@
+{
+    "ok":  true,
+    "token":  "PROTEUSOPS_CLI_RECEIPTS_OK",
+    "utc":  "2026-06-06T22:47:29.5487992Z",
+    "data":  {
+                 "tokens":  [
+                                "PROTEUSOPS_FULL_GREEN_ENGINE_REGISTRY_OK",
+                                "PROTEUSOPS_CUSTOMER_DEPLOYMENT_HANDOFF_OK",
+                                "PROTEUSOPS_SECURITY_GATE_MATRIX_OK",
+                                "PROTEUSOPS_STRESS_HARNESS_OK"
+                            ]
+             }
+}

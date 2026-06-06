@@ -1,0 +1,24 @@
+{
+    "ok":  true,
+    "token":  "PROTEUSOPS_CLI_FULL_GREEN_SMOKE_OK",
+    "utc":  "2026-06-06T22:47:29.7673512Z",
+    "cli":  "C:\\dev\\proteusops\\cli\\proteus.ps1",
+    "rpc_client":  "C:\\dev\\proteusops\\cli\\lib\\supabase_client.ps1",
+    "config_example":  "C:\\dev\\proteusops\\proteus.config.example.json",
+    "commands":  {
+                     "help":  "PROTEUSOPS_CLI_HELP_OK",
+                     "models":  "PROTEUSOPS_CLI_MODELS_OK",
+                     "setup":  "PROTEUSOPS_CLI_SETUP_OK",
+                     "verify":  "PROTEUSOPS_CLI_VERIFY_NEEDS_ORG_OK",
+                     "launch":  "PROTEUSOPS_CLI_LAUNCH_ARGUMENT_GATE_OK",
+                     "receipts":  "PROTEUSOPS_CLI_RECEIPTS_OK"
+                 },
+    "cli_receipt_paths":  [
+                              "C:\\dev\\proteusops\\proofs\\receipts\\cli\\20260606_224726_2006662Z_help.json",
+                              "C:\\dev\\proteusops\\proofs\\receipts\\cli\\20260606_224726_9971453Z_models.json",
+                              "C:\\dev\\proteusops\\proofs\\receipts\\cli\\20260606_224727_6519076Z_setup.json",
+                              "C:\\dev\\proteusops\\proofs\\receipts\\cli\\20260606_224728_2365071Z_verify.json",
+                              "C:\\dev\\proteusops\\proofs\\receipts\\cli\\20260606_224728_8553125Z_launch.json",
+                              "C:\\dev\\proteusops\\proofs\\receipts\\cli\\20260606_224729_5688023Z_receipts.json"
+                          ]
+}

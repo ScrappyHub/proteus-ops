@@ -1,6 +1,6 @@
 param(
   [Parameter(Position=0)]
-  [ValidateSet("setup","models","verify","launch","rollback","receipts","rpc","help")]
+  [ValidateSet("setup","models","verify","launch","rollback","receipts","rpc","check-supabase","help")]
   [string]$Command = "help",
 
   [string]$Model = "DEVELOPER_PORTAL_V1",
@@ -21,6 +21,11 @@ $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ClientPath = Join-Path $ScriptRoot "lib\supabase_client.ps1"
 if(Test-Path -LiteralPath $ClientPath -PathType Leaf){
   . $ClientPath
+}
+
+$SupabaseExecutionAdapterPath = Join-Path $ScriptRoot "lib\supabase_execution_adapter.ps1"
+if(Test-Path -LiteralPath $SupabaseExecutionAdapterPath -PathType Leaf){
+  . $SupabaseExecutionAdapterPath
 }
 
 function Write-ProteusJson([object]$Obj){ $Obj | ConvertTo-Json -Depth 40 }
@@ -87,7 +92,7 @@ switch($Command){
       commands = @("setup","models","verify","launch","rollback","receipts","rpc")
     }
     if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
-    Show-Human "ProteusOps CLI" "Commands: setup, models, verify, launch, rollback, receipts, rpc"
+    Show-Human "ProteusOps CLI" "Commands: setup, models, verify, launch, rollback, receipts, rpc, check-supabase"
     return
   }
 
@@ -267,6 +272,40 @@ switch($Command){
     return
   }
 
+  "check-supabase" {
+    $repoRoot = Split-Path -Parent $ScriptRoot
+
+    if(-not (Get-Command Test-ProteusSupabaseExecutionReadiness -ErrorAction SilentlyContinue)){
+      throw "PROTEUS_SUPABASE_EXECUTION_ADAPTER_NOT_LOADED"
+    }
+
+    $check = Test-ProteusSupabaseExecutionReadiness -RepoRoot $repoRoot -ConfigPath $Config
+
+    $receipt = [ordered]@{
+      ok = [bool]$check.ok
+      token = "PROTEUSOPS_CLI_SUPABASE_EXECUTION_CHECK_OK"
+      utc = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ")
+      check = $check
+    }
+
+    if($Json){
+      Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson
+      return
+    }
+
+    $receiptPath = Export-ProteusCliReceipt -Receipt $receipt -CommandName $Command
+    Show-Human "Supabase Check" ("Status: " + $check.readiness_status)
+    Write-Host ("CLI_RECEIPT: " + $receiptPath) -ForegroundColor DarkGray
+
+    if($check.blocked_reasons.Count -gt 0){
+      Write-Host "Blocked reasons:"
+      foreach($r in $check.blocked_reasons){
+        Write-Host ("- " + $r)
+      }
+    }
+
+    return
+  }
   "rollback" {
     $receipt = New-ProteusReceipt "PROTEUSOPS_CLI_ROLLBACK_PENDING_OK" @{
       status = "pending_rollback_wiring"

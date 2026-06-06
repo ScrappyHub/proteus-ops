@@ -42,22 +42,22 @@ if(!(Test-Path -LiteralPath $ConfigExample -PathType Leaf)){ Die "CONFIG_EXAMPLE
 
 Ensure-Dir $ReceiptDir
 
-$help = Invoke-CliJson @("-Command","help","-Json")
+$help = Invoke-CliJson @("-Json","-Command","help")
 Assert-Token $help "PROTEUSOPS_CLI_HELP_OK"
 
-$models = Invoke-CliJson @("-Command","models","-Json")
+$models = Invoke-CliJson @("-Json","-Command","models")
 Assert-Token $models "PROTEUSOPS_CLI_MODELS_OK"
 
-$setup = Invoke-CliJson @("-Command","setup","-Json")
+$setup = Invoke-CliJson @("-Json","-Command","setup")
 Assert-Token $setup "PROTEUSOPS_CLI_SETUP_OK"
 
-$verify = Invoke-CliJson @("-Command","verify","-Json")
+$verify = Invoke-CliJson @("-Json","-Command","verify")
 Assert-Token $verify "PROTEUSOPS_CLI_VERIFY_NEEDS_ORG_OK"
 
-$launch = Invoke-CliJson @("-Command","launch","-Json")
+$launch = Invoke-CliJson @("-Json","-Command","launch")
 Assert-Token $launch "PROTEUSOPS_CLI_LAUNCH_ARGUMENT_GATE_OK"
 
-$receipts = Invoke-CliJson @("-Command","receipts","-Json")
+$receipts = Invoke-CliJson @("-Json","-Command","receipts")
 Assert-Token $receipts "PROTEUSOPS_CLI_RECEIPTS_OK"
 
 $receiptPaths = @(

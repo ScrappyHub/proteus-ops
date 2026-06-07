@@ -1,12 +1,14 @@
 param(
   [Parameter(Position=0)]
-  [ValidateSet("setup","models","verify","launch","rollback","receipts","rpc","check-supabase","help")]
+  [ValidateSet("setup","models","verify","launch","rollback","receipts","rpc","check-supabase","connect","help")]
   [string]$Command = "help",
 
   [string]$Model = "DEVELOPER_PORTAL_V1",
   [string]$OrgId = "",
   [string]$Config = ".\proteus.config.json",
   [string]$RpcName = "",
+  [ValidateSet("supabase","stripe","github","figma","email","storage")]
+  [string]$Provider = "supabase",
   [string]$WizardSessionId = "",
   [string]$PlanRunId = "",
   [string]$DeploymentReceiptId = "",
@@ -92,7 +94,7 @@ switch($Command){
       commands = @("setup","models","verify","launch","rollback","receipts","rpc")
     }
     if($Json){ Write-ProteusCliResult -Receipt $receipt -CommandName $Command -AsJson; return }
-    Show-Human "ProteusOps CLI" "Commands: setup, models, verify, launch, rollback, receipts, rpc, check-supabase"
+    Show-Human "ProteusOps CLI" "Commands: setup, models, verify, launch, rollback, receipts, rpc, check-supabase, connect"
     return
   }
 
@@ -272,6 +274,80 @@ switch($Command){
     return
   }
 
+  "connect" {
+    $repoRoot = Split-Path -Parent $ScriptRoot
+
+    if($Provider -ne "supabase"){
+      $receipt = [ordered]@{
+        ok = $false
+        token = "PROTEUSOPS_CLI_CONNECT_PROVIDER_SCAFFOLD_OK"
+        provider = $Provider
+        status = "provider_not_implemented_yet"
+        implemented = @("supabase")
+        next = "Add provider adapter for " + $Provider
+      }
+
+      if($Json){
+        Write-ProteusCliResult -Receipt $receipt -CommandName ("connect-" + $Provider) -AsJson
+        return
+      }
+
+      Show-Human "Connect" ("Provider scaffold exists, but " + $Provider + " is not implemented yet.")
+      return
+    }
+
+    $localConfig = Join-Path $repoRoot "proteus.config.json"
+
+    if(!(Test-Path -LiteralPath $localConfig -PathType Leaf)){
+      $cfg = [ordered]@{
+        supabase_url = "https://YOUR_PROJECT.supabase.co"
+        service_role_key = ""
+        anon_key = ""
+        default_model = $Model
+      }
+
+      $json = $cfg | ConvertTo-Json -Depth 10
+      [IO.File]::WriteAllText($localConfig,($json + "`n"),[Text.UTF8Encoding]::new($false))
+    }
+
+    if(-not (Get-Command Test-ProteusSupabaseExecutionReadiness -ErrorAction SilentlyContinue)){
+      throw "PROTEUS_SUPABASE_EXECUTION_ADAPTER_NOT_LOADED"
+    }
+
+    $check = Test-ProteusSupabaseExecutionReadiness -RepoRoot $repoRoot -ConfigPath $localConfig
+
+    $receipt = [ordered]@{
+      ok = [bool]$check.ok
+      token = "PROTEUSOPS_CLI_CONNECT_PROVIDER_SCAFFOLD_OK"
+      provider = "supabase"
+      config_path = $localConfig
+      readiness_status = $check.readiness_status
+      blocked_reasons = $check.blocked_reasons
+      destructive_actions = $false
+      secret_printed = $false
+      next = $(if($check.ok){ "Supabase ready." } else { "Fill missing local config values, then rerun connect." })
+      check = $check
+    }
+
+    if($Json){
+      Write-ProteusCliResult -Receipt $receipt -CommandName "connect-supabase" -AsJson
+      return
+    }
+
+    $receiptPath = Export-ProteusCliReceipt -Receipt $receipt -CommandName "connect-supabase"
+    Show-Human "Connect Supabase" ("Status: " + $check.readiness_status)
+    Write-Host ("Config: " + $localConfig)
+    Write-Host ("CLI_RECEIPT: " + $receiptPath) -ForegroundColor DarkGray
+
+    if($check.blocked_reasons.Count -gt 0){
+      Write-Host "Blocked reasons:"
+      foreach($r in $check.blocked_reasons){
+        Write-Host ("- " + $r)
+      }
+    }
+
+    return
+  }
   "check-supabase" {
     $repoRoot = Split-Path -Parent $ScriptRoot
 

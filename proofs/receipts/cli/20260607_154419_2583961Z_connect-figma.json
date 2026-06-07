@@ -1,0 +1,10 @@
+{
+    "ok":  false,
+    "token":  "PROTEUSOPS_CLI_CONNECT_PROVIDER_SCAFFOLD_OK",
+    "provider":  "figma",
+    "status":  "provider_not_implemented_yet",
+    "implemented":  [
+                        "supabase"
+                    ],
+    "next":  "Add provider adapter for figma"
+}

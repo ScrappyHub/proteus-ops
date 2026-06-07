@@ -10,4 +10,6 @@ yarn-error.log*
 
 
 *.bak_*
-scripts/_patch/*.bak_*
+scripts/_patch/*.bak_*proteus.config.json
+*.local.json
+!proteus.config.example.json

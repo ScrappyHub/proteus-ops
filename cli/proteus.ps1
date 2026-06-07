@@ -298,16 +298,71 @@ switch($Command){
 
     $localConfig = Join-Path $repoRoot "proteus.config.json"
 
-    if(!(Test-Path -LiteralPath $localConfig -PathType Leaf)){
+    $needsPrompt = $true
+
+    if(Test-Path -LiteralPath $localConfig -PathType Leaf){
+      try {
+        $existing = Get-Content -Raw -LiteralPath $localConfig | ConvertFrom-Json
+        $hasUrl = ($existing.PSObject.Properties.Name -contains "supabase_url") -and (-not [string]::IsNullOrWhiteSpace([string]$existing.supabase_url))
+        $hasService = ($existing.PSObject.Properties.Name -contains "service_role_key") -and (-not [string]::IsNullOrWhiteSpace([string]$existing.service_role_key))
+        $hasAnon = ($existing.PSObject.Properties.Name -contains "anon_key") -and (-not [string]::IsNullOrWhiteSpace([string]$existing.anon_key))
+        $needsPrompt = -not ($hasUrl -and ($hasService -or $hasAnon))
+      }
+      catch {
+        $needsPrompt = $true
+      }
+    }
+
+    if($needsPrompt -and -not $Json){
+      Write-Host ""
+      Write-Host "Connect Supabase" -ForegroundColor Cyan
+      Write-Host "Paste values from Supabase Dashboard > Project Settings > API."
+      Write-Host "Secrets will be written only to local proteus.config.json and will not be printed."
+      Write-Host ""
+
+      $url = Read-Host "Supabase Project URL"
+      $keySecure = Read-Host "Supabase service_role key or anon key" -AsSecureString
+
+      $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($keySecure)
+      try {
+        $key = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+      }
+      finally {
+        if($bstr -ne [IntPtr]::Zero){
+          [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+        }
+      }
+
+      if([string]::IsNullOrWhiteSpace($url)){
+        throw "PROTEUS_CONNECT_SUPABASE_URL_EMPTY"
+      }
+
+      if([string]::IsNullOrWhiteSpace($key)){
+        throw "PROTEUS_CONNECT_SUPABASE_KEY_EMPTY"
+      }
+
       $cfg = [ordered]@{
-        supabase_url = "https://YOUR_PROJECT.supabase.co"
-        service_role_key = ""
+        supabase_url = $url.Trim()
+        service_role_key = $key
         anon_key = ""
         default_model = $Model
       }
 
-      $json = $cfg | ConvertTo-Json -Depth 10
-      [IO.File]::WriteAllText($localConfig,($json + "`n"),[Text.UTF8Encoding]::new($false))
+      $jsonConfig = $cfg | ConvertTo-Json -Depth 10
+      [IO.File]::WriteAllText($localConfig,($jsonConfig + "`n"),[Text.UTF8Encoding]::new($false))
+    }
+    elseif($needsPrompt -and $Json){
+      if(!(Test-Path -LiteralPath $localConfig -PathType Leaf)){
+        $cfg = [ordered]@{
+          supabase_url = "https://YOUR_PROJECT.supabase.co"
+          service_role_key = ""
+          anon_key = ""
+          default_model = $Model
+        }
+
+        $jsonConfig = $cfg | ConvertTo-Json -Depth 10
+        [IO.File]::WriteAllText($localConfig,($jsonConfig + "`n"),[Text.UTF8Encoding]::new($false))
+      }
     }
 
     if(-not (Get-Command Test-ProteusSupabaseExecutionReadiness -ErrorAction SilentlyContinue)){
@@ -318,7 +373,7 @@ switch($Command){
 
     $receipt = [ordered]@{
       ok = [bool]$check.ok
-      token = "PROTEUSOPS_CLI_CONNECT_PROVIDER_SCAFFOLD_OK"
+      token = "PROTEUSOPS_CLI_CONNECT_SUPABASE_INTERACTIVE_OK"
       provider = "supabase"
       config_path = $localConfig
       readiness_status = $check.readiness_status

@@ -1,0 +1,34 @@
+{
+    "ok":  false,
+    "token":  "PROTEUSOPS_CLI_CONNECT_SUPABASE_INTERACTIVE_OK",
+    "provider":  "supabase",
+    "config_path":  "C:\\dev\\proteusops\\proteus.config.json",
+    "readiness_status":  "blocked",
+    "blocked_reasons":  [
+                            "supabase_key_missing"
+                        ],
+    "destructive_actions":  false,
+    "secret_printed":  false,
+    "next":  "Fill missing local config values, then rerun connect.",
+    "check":  {
+                  "ok":  false,
+                  "token":  "PROTEUSOPS_SUPABASE_PROJECT_EXECUTION_ADAPTER_OK",
+                  "utc":  "2026-06-07T16:40:45.9316817Z",
+                  "adapter":  "supabase_project_execution",
+                  "readiness_status":  "blocked",
+                  "repo_root":  "C:\\dev\\proteusops",
+                  "config_path":  "C:\\dev\\proteusops\\proteus.config.json",
+                  "config_exists":  true,
+                  "supabase_url_present":  true,
+                  "supabase_key_present":  false,
+                  "default_model":  "DEVELOPER_PORTAL_V1",
+                  "migration_dir":  "C:\\dev\\proteusops\\migrations",
+                  "migration_count":  50,
+                  "rpc_client_exists":  true,
+                  "supabase_cli_available":  true,
+                  "blocked_reasons":  [
+                                          "supabase_key_missing"
+                                      ],
+                  "destructive_actions":  false
+              }
+}

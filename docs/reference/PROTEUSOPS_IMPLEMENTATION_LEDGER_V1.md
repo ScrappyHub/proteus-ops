@@ -206,3 +206,18 @@ authority work proceed.
 Re-run the local verification at any time:
 `docker exec -i supabase_db_proteusops psql -U postgres -d postgres -c "select pods_provisioning.rpc_verify_platform_constitution_v1();"`
 Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
+
+## 9. Progress log
+
+### 2026-09-21 — Path A phase 1 (baseline adoption) — GREEN
+- Adopted hosted schema as canonical baseline migration
+  `supabase/migrations/20260721230000_hosted_baseline_v1.sql` (from the 2026-09-21 dump),
+  ordered before the constitution.
+- `supabase db reset` applies baseline -> constitution cleanly (benign "already exists"
+  notices only). Local now reproduces hosted + governance from versioned migrations:
+  pods=30, pods_core=11, pods_ops=3, pods_provisioning=141 (138 app + 3 constitution),
+  pods_public=4; 249 functions; `rpc_verify_platform_constitution_v1()` = ok:true
+  (hashes bcb9fcbf…, 62af32b8…). Verified via `scripts/_AUDIT_verify_baseline_reset_v1.ps1`
+  (evidence: `proofs/audit/baseline_reset_verify_20260921_203905Z.txt`).
+- Reproducibility gap closed on LOCAL. Remaining Path A: (2) reconcile numbered
+  migrations/001-048 vs the baseline; (3) apply the constitution to HOSTED (production).

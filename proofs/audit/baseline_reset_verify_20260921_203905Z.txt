@@ -1,0 +1,108 @@
+ProteusOps BASELINE RESET VERIFY  20260921_203905Z
+
+===== supabase db reset (LOCAL only; rebuilds from supabase/migrations) =====
+Resetting local database...
+Recreating database...
+Initialising schema...
+v1.77.5: Pulling from supabase/storage-api
+a06e5fe4d6ae: Pulling fs layer
+54c04bf9f4fc: Pulling fs layer
+fac22bc5cecd: Pulling fs layer
+05c0c2aca497: Pulling fs layer
+15f8ad8fae49: Pulling fs layer
+6b02a50dcd71: Pulling fs layer
+eb54a47ae47d: Pulling fs layer
+f6ee6ec72260: Pulling fs layer
+34de6b21cc2e: Pulling fs layer
+75f753062429: Pulling fs layer
+e53a5764ca1a: Pulling fs layer
+05ee0ed47954: Pulling fs layer
+56258ccfdddc: Pulling fs layer
+44136fa355b3: Download complete
+54c04bf9f4fc: Download complete
+fac22bc5cecd: Download complete
+69aa8f72f2ac: Download complete
+15f8ad8fae49: Download complete
+6b02a50dcd71: Download complete
+05ee0ed47954: Download complete
+75f753062429: Download complete
+a06e5fe4d6ae: Download complete
+e53a5764ca1a: Download complete
+34de6b21cc2e: Download complete
+f6ee6ec72260: Download complete
+05c0c2aca497: Download complete
+05c0c2aca497: Pull complete
+a06e5fe4d6ae: Pull complete
+fac22bc5cecd: Pull complete
+eb54a47ae47d: Download complete
+56258ccfdddc: Download complete
+75f753062429: Pull complete
+e53a5764ca1a: Pull complete
+56258ccfdddc: Pull complete
+54c04bf9f4fc: Pull complete
+f6ee6ec72260: Pull complete
+15f8ad8fae49: Pull complete
+eb54a47ae47d: Pull complete
+6b02a50dcd71: Pull complete
+6b02a50dcd71: Pull complete
+05ee0ed47954: Pull complete
+34de6b21cc2e: Pull complete
+Digest: sha256:4ae1890ba0c6fd24d975c34f3aa201a01d410171c8ba6eddeb675ef92341a62d
+Status: Downloaded newer image for public.ecr.aws/supabase/storage-api:v1.77.5
+v2.197.0: Pulling from supabase/gotrue
+74c409e3506a: Pulling fs layer
+c0cb7126d877: Pulling fs layer
+71eb50013731: Pulling fs layer
+e5d190db8191: Pulling fs layer
+f30f4fcb85f4: Pulling fs layer
+f30f4fcb85f4: Download complete
+c0cb7126d877: Download complete
+44136fa355b3: Already exists
+71eb50013731: Download complete
+74c409e3506a: Download complete
+71eb50013731: Pull complete
+41e9f49dd3b3: Download complete
+74c409e3506a: Pull complete
+e5d190db8191: Download complete
+e5d190db8191: Pull complete
+f30f4fcb85f4: Pull complete
+c0cb7126d877: Pull complete
+Digest: sha256:1736a63078f5922b198c4cbe50f80ab9a2d3b54fe8b7b6cfb2e9dc5dbbc12c6b
+Status: Downloaded newer image for public.ecr.aws/supabase/gotrue:v2.197.0
+Seeding globals from roles.sql...
+Applying migration 20260721230000_hosted_baseline_v1.sql...
+Applying migration 20260721231000_platform_constitution_v1.sql...
+NOTICE (42P06): schema "pods_provisioning" already exists, skipping
+NOTICE (42P06): schema "extensions" already exists, skipping
+NOTICE (42710): extension "pgcrypto" already exists, skipping
+WARN: no files matched pattern: supabase/seed.sql
+Restarting containers...
+Finished supabase db reset on branch audit/implementation-ledger-v1.
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== LOCAL DB INTROSPECTION (post-reset) =====
+Pager usage is off.
+:::OBJECT_COUNTS_BY_SCHEMA:::
+table_schema | count
+pods | 30
+pods_core | 11
+pods_ops | 3
+pods_provisioning | 141
+pods_public | 4
+(5 rows)
+:::FUNCTION_COUNT:::
+pods_functions
+249
+(1 row)
+:::CONSTITUTION_TABLES_PRESENT:::
+authreg | constver
+pods_provisioning.platform_authority_registry_v1 | pods_provisioning.platform_constitution_versions_v1
+(1 row)
+:::CONSTITUTION_VERIFY_RPC:::
+rpc_verify_platform_constitution_v1
+{"ok": true, "seed": {"ok": true, "token": "PROTEUSOPS_PLATFORM_CONSTITUTION_OK", "constitution_key": "PROTEUSOPS_PLATFORM_CONSTITUTION_V1", "authority_pattern": ["tables", "views", "parameters", "stored_procedures", "receipts", "selftests", "audit", "runtime_integration", "marketplace_integration"], "commercial_future": {"figma_product_design": true, "stripe_payment_provider": true, "vercel_deployment_provider": true, "proteusops_entitlement_authority": true, "developer_marketplace_coming_soon": true, "cloudflare_domain_dns_ssl_provider": true}, "constitution_hash": "bcb9fcbfefdec5417501d3c87569ec7ae63b866b6df83ce0e6c98aedf337e042", "platform_identity": "governed_application_platform", "primary_user_flow": ["choose_model", "purchase_or_entitle_model", "create_account_or_org", "connect_providers", "buy_or_connect_domain", "provision_database", "run_migrations", "deploy_frontend", "operate_from_dashboard"], "constitution_version": "v1"}, "token": "PROTEUSOPS_PLATFORM_CONSTITUTION_OK", "verification_hash": "62af32b8965d81695a8a17f213610be918ee60eb8367c1f5d43670dea380eb62", "active_authority_count": 9, "planned_authority_count": 4, "platform_migration_lock_id": "7dd115a1-00dc-4a52-bc7f-070b1dccbaf4"}
+(1 row)
+
+===== DONE =====
+===VERIFY_COMPLETE===

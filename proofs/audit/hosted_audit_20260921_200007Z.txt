@@ -1,0 +1,31 @@
+ProteusOps HOSTED AUDIT  20260921_200007Z  ref=ytwjyemqlbbebysiopzd
+
+===== LINK (you will be prompted for the hosted DB password) =====
+Finished supabase link.
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== REMOTE MIGRATION HISTORY (supabase migration list) =====
+Initialising login role...
+Connecting to remote database...
+
+  
+   Local          | Remote         | Time (UTC)          
+  ----------------|----------------|---------------------
+                  | 20260721222534 | 2026-07-21 22:25:34 
+                  | 20260721225911 | 2026-07-21 22:59:11 
+   20260721231000 |                | 2026-07-21 23:10:00 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== SCHEMA-ONLY DUMP (no data) =====
+Initialising login role...
+Dumping schemas from remote database...
+Dumped schema to C:\dev\proteusops\proofs\audit\hosted_schema_20260921_200007Z.sql.
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+dump_bytes=937318
+
+===== DONE =====
+===AUDIT_COMPLETE===

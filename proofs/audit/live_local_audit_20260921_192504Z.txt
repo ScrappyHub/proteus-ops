@@ -1,0 +1,273 @@
+ProteusOps LIVE LOCAL AUDIT  20260921_192504Z
+
+===== TOOLCHAIN =====
+
+===== DOCKER PS (proteus/supabase) =====
+supabase_db_rgsr_core_platform	Up 14 hours (healthy)	0.0.0.0:55322->5432/tcp, [::]:55322->5432/tcp
+supabase_studio_proteusops	Up 14 hours (healthy)	0.0.0.0:54323->3000/tcp, [::]:54323->3000/tcp
+supabase_pg_meta_proteusops	Up 14 hours (healthy)	8080/tcp
+supabase_edge_runtime_proteusops	Exited (255) 2 months ago	8081/tcp
+supabase_storage_proteusops	Up 14 hours (healthy)	5000/tcp
+supabase_rest_proteusops	Up 14 hours	3000/tcp
+supabase_inbucket_proteusops	Up 14 hours (healthy)	0.0.0.0:54324->8025/tcp, [::]:54324->8025/tcp
+supabase_realtime_proteusops	Up 14 hours (healthy)	4000/tcp
+supabase_auth_proteusops	Up 14 hours (healthy)	9999/tcp
+supabase_kong_proteusops	Up 14 hours (healthy)	0.0.0.0:54321->8000/tcp, [::]:54321->8000/tcp
+supabase_vector_proteusops	Up 14 hours (healthy)	
+supabase_analytics_proteusops	Up 14 hours (healthy)	0.0.0.0:54327->4000/tcp, [::]:54327->4000/tcp
+supabase_db_proteusops	Up 14 hours (healthy)	0.0.0.0:54322->5432/tcp, [::]:54322->5432/tcp
+supabase_studio_rgsr_core_platform	Up 14 hours (healthy)	0.0.0.0:55323->3000/tcp, [::]:55323->3000/tcp
+supabase_pg_meta_rgsr_core_platform	Up 14 hours (healthy)	8080/tcp
+supabase_edge_runtime_rgsr_core_platform	Exited (255) 2 months ago	8081/tcp
+supabase_storage_rgsr_core_platform	Up 14 hours (healthy)	5000/tcp
+supabase_rest_rgsr_core_platform	Up 14 hours	3000/tcp
+supabase_realtime_rgsr_core_platform	Up 14 hours (healthy)	4000/tcp
+supabase_inbucket_rgsr_core_platform	Up 14 hours (healthy)	0.0.0.0:55324->8025/tcp, [::]:55324->8025/tcp
+supabase_auth_rgsr_core_platform	Up 14 hours (healthy)	9999/tcp
+supabase_kong_rgsr_core_platform	Up 14 hours (healthy)	0.0.0.0:55321->8000/tcp, [::]:55321->8000/tcp
+supabase_vector_rgsr_core_platform	Up 14 hours (healthy)	
+supabase_analytics_rgsr_core_platform	Up 14 hours (healthy)	0.0.0.0:55327->4000/tcp, [::]:55327->4000/tcp
+supabase_storage_MeUseBlob	Up 14 hours (healthy)	5000/tcp
+supabase_rest_MeUseBlob	Up 14 hours	3000/tcp
+supabase_realtime_MeUseBlob	Up 14 hours (healthy)	4000/tcp
+supabase_inbucket_MeUseBlob	Up 14 hours (healthy)	0.0.0.0:55425->1025/tcp, [::]:55425->1025/tcp, 0.0.0.0:55426->1110/tcp, [::]:55426->1110/tcp, 0.0.0.0:55424->8025/tcp, [::]:55424->8025/tcp
+supabase_auth_MeUseBlob	Up 14 hours (healthy)	9999/tcp
+supabase_kong_MeUseBlob	Up 14 hours (healthy)	0.0.0.0:55421->8000/tcp, [::]:55421->8000/tcp
+supabase_vector_MeUseBlob	Up 14 hours (healthy)	
+supabase_analytics_MeUseBlob	Up 14 hours (healthy)	0.0.0.0:55427->4000/tcp, [::]:55427->4000/tcp
+supabase_studio_MeUseBlob	Up 14 hours (healthy)	0.0.0.0:55423->3000/tcp, [::]:55423->3000/tcp
+supabase_pg_meta_MeUseBlob	Up 14 hours (healthy)	8080/tcp
+supabase_edge_runtime_MeUseBlob	Exited (255) 5 months ago	8081/tcp
+supabase_db_MeUseBlob	Up 14 hours (healthy)	0.0.0.0:55422->5432/tcp, [::]:55422->5432/tcp
+supabase_db_dod_witness_kit	Up 14 hours (healthy)	0.0.0.0:54422->5432/tcp, [::]:54422->5432/tcp
+supabase_studio_dod_witness_kit	Up 14 hours (healthy)	0.0.0.0:54423->3000/tcp, [::]:54423->3000/tcp
+supabase_pg_meta_dod_witness_kit	Up 14 hours (healthy)	8080/tcp
+supabase_edge_runtime_dod_witness_kit	Exited (255) 6 months ago	8081/tcp
+supabase_storage_dod_witness_kit	Up 14 hours (healthy)	5000/tcp
+supabase_rest_dod_witness_kit	Up 14 hours	3000/tcp
+supabase_realtime_dod_witness_kit	Up 14 hours (healthy)	4000/tcp
+supabase_inbucket_dod_witness_kit	Up 14 hours (healthy)	0.0.0.0:54425->1025/tcp, [::]:54425->1025/tcp, 0.0.0.0:54426->1110/tcp, [::]:54426->1110/tcp, 0.0.0.0:54424->8025/tcp, [::]:54424->8025/tcp
+supabase_auth_dod_witness_kit	Up 14 hours (healthy)	9999/tcp
+supabase_kong_dod_witness_kit	Up 14 hours (healthy)	0.0.0.0:54421->8000/tcp, [::]:54421->8000/tcp
+supabase_vector_dod_witness_kit	Up 14 hours (healthy)	
+supabase_analytics_dod_witness_kit	Up 14 hours (healthy)	0.0.0.0:54427->4000/tcp, [::]:54427->4000/tcp
+supabase_studio_apv_local	Up 14 hours (healthy)	0.0.0.0:54333->3000/tcp, [::]:54333->3000/tcp
+supabase_pg_meta_apv_local	Up 14 hours (healthy)	8080/tcp
+supabase_edge_runtime_apv_local	Exited (255) 6 months ago	8081/tcp
+supabase_storage_apv_local	Up 14 hours (healthy)	5000/tcp
+supabase_rest_apv_local	Up 14 hours	3000/tcp
+supabase_realtime_apv_local	Up 14 hours (healthy)	4000/tcp
+supabase_inbucket_apv_local	Up 14 hours (healthy)	0.0.0.0:54344->8025/tcp, [::]:54344->8025/tcp
+supabase_auth_apv_local	Up 14 hours (healthy)	9999/tcp
+supabase_kong_apv_local	Up 14 hours (healthy)	0.0.0.0:54331->8000/tcp, [::]:54331->8000/tcp
+supabase_vector_apv_local	Up 14 hours (healthy)	
+supabase_analytics_apv_local	Up 14 hours (healthy)	0.0.0.0:54337->4000/tcp, [::]:54337->4000/tcp
+supabase_db_apv_local	Up 14 hours (healthy)	0.0.0.0:54329->5432/tcp, [::]:54329->5432/tcp
+supabase_studio_rebound	Up 14 hours (healthy)	0.0.0.0:54523->3000/tcp, [::]:54523->3000/tcp
+supabase_pg_meta_rebound	Up 14 hours (healthy)	8080/tcp
+supabase_edge_runtime_rebound	Exited (255) 7 months ago	8081/tcp
+supabase_storage_rebound	Up 14 hours (healthy)	5000/tcp
+supabase_rest_rebound	Up 14 hours	3000/tcp
+supabase_realtime_rebound	Up 14 hours (healthy)	4000/tcp
+supabase_inbucket_rebound	Up 14 hours (healthy)	0.0.0.0:54525->1025/tcp, [::]:54525->1025/tcp, 0.0.0.0:54526->1110/tcp, [::]:54526->1110/tcp, 0.0.0.0:54524->8025/tcp, [::]:54524->8025/tcp
+supabase_auth_rebound	Up 14 hours (healthy)	9999/tcp
+supabase_kong_rebound	Up 14 hours (healthy)	0.0.0.0:54521->8000/tcp, [::]:54521->8000/tcp
+supabase_vector_rebound	Up 14 hours (healthy)	
+supabase_analytics_rebound	Up 14 hours (healthy)	0.0.0.0:54527->4000/tcp, [::]:54527->4000/tcp
+supabase_db_rebound	Up 14 hours (healthy)	0.0.0.0:54522->5432/tcp, [::]:54522->5432/tcp
+
+===== SUPABASE STATUS (pre) =====
+Stopped services: [supabase_imgproxy_proteusops supabase_edge_runtime_proteusops supabase_pooler_proteusops]
+supabase local development setup is running.
+System.Management.Automation.RemoteException
+Gò¡GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò«
+Göé =ƒöº Development Tools                 Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöñ
+Göé Studio  Göé http://127.0.0.1:54323     Göé
+Göé Mailpit Göé http://127.0.0.1:54324     Göé
+Göé MCP     Göé http://127.0.0.1:54321/mcp Göé
+Gò¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò»
+
+Gò¡GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò«
+Göé =ƒîÉ APIs                                         Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöñ
+Göé Project URL Göé http://127.0.0.1:54321            Göé
+Göé REST        Göé http://127.0.0.1:54321/rest/v1    Göé
+Göé GraphQL     Göé http://127.0.0.1:54321/graphql/v1 Göé
+Gò¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò»
+
+Gò¡GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò«
+Göé G¢ü Database                                                    Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöñ
+Göé URL Göé postgresql://postgres:[REDACTED]@127.0.0.1:54322/postgres Göé
+Gò¦GöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò»
+
+Gò¡GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò«
+Göé =ƒöæ Authentication Keys                                       Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöñ
+Göé Publishable Göé sb_publishable_[REDACTED] Göé
+Göé Secret      Göé sb_secret_[REDACTED]      Göé
+Gò¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò»
+
+Gò¡GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò«
+Göé =ƒôª Storage (S3)                                                               Göé
+Gö£GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¼GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöñ
+Göé URL        Göé http://127.0.0.1:54321/storage/v1/s3                             Göé
+Göé Access Key Göé 625729a08b95bf1b7ff351a663f3a23c                                 Göé
+Göé Secret Key Göé 850181e4652dd023b7a98c58ae0d2d34bd487ee0cc3254aed6eda37307425907 Göé
+Göé Region     Göé local                                                            Göé
+Gò¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGö¦GöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGöÇGò»
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== DOCKER PS (post) =====
+supabase_db_rgsr_core_platform	Up 14 hours (healthy)
+supabase_studio_proteusops	Up 14 hours (healthy)
+supabase_pg_meta_proteusops	Up 14 hours (healthy)
+supabase_storage_proteusops	Up 14 hours (healthy)
+supabase_rest_proteusops	Up 14 hours
+supabase_inbucket_proteusops	Up 14 hours (healthy)
+supabase_realtime_proteusops	Up 14 hours (healthy)
+supabase_auth_proteusops	Up 14 hours (healthy)
+supabase_kong_proteusops	Up 14 hours (healthy)
+supabase_vector_proteusops	Up 14 hours (healthy)
+supabase_analytics_proteusops	Up 14 hours (healthy)
+supabase_db_proteusops	Up 14 hours (healthy)
+supabase_studio_rgsr_core_platform	Up 14 hours (healthy)
+supabase_pg_meta_rgsr_core_platform	Up 14 hours (healthy)
+supabase_storage_rgsr_core_platform	Up 14 hours (healthy)
+supabase_rest_rgsr_core_platform	Up 14 hours
+supabase_realtime_rgsr_core_platform	Up 14 hours (healthy)
+supabase_inbucket_rgsr_core_platform	Up 14 hours (healthy)
+supabase_auth_rgsr_core_platform	Up 14 hours (healthy)
+supabase_kong_rgsr_core_platform	Up 14 hours (healthy)
+supabase_vector_rgsr_core_platform	Up 14 hours (healthy)
+supabase_analytics_rgsr_core_platform	Up 14 hours (healthy)
+supabase_storage_MeUseBlob	Up 14 hours (healthy)
+supabase_rest_MeUseBlob	Up 14 hours
+supabase_realtime_MeUseBlob	Up 14 hours (healthy)
+supabase_inbucket_MeUseBlob	Up 14 hours (healthy)
+supabase_auth_MeUseBlob	Up 14 hours (healthy)
+supabase_kong_MeUseBlob	Up 14 hours (healthy)
+supabase_vector_MeUseBlob	Up 14 hours (healthy)
+supabase_analytics_MeUseBlob	Up 14 hours (healthy)
+supabase_studio_MeUseBlob	Up 14 hours (healthy)
+supabase_pg_meta_MeUseBlob	Up 14 hours (healthy)
+supabase_db_MeUseBlob	Up 14 hours (healthy)
+supabase_db_dod_witness_kit	Up 14 hours (healthy)
+supabase_studio_dod_witness_kit	Up 14 hours (healthy)
+supabase_pg_meta_dod_witness_kit	Up 14 hours (healthy)
+supabase_storage_dod_witness_kit	Up 14 hours (healthy)
+supabase_rest_dod_witness_kit	Up 14 hours
+supabase_realtime_dod_witness_kit	Up 14 hours (healthy)
+supabase_inbucket_dod_witness_kit	Up 14 hours (healthy)
+supabase_auth_dod_witness_kit	Up 14 hours (healthy)
+supabase_kong_dod_witness_kit	Up 14 hours (healthy)
+supabase_vector_dod_witness_kit	Up 14 hours (healthy)
+supabase_analytics_dod_witness_kit	Up 14 hours (healthy)
+supabase_studio_apv_local	Up 14 hours (healthy)
+supabase_pg_meta_apv_local	Up 14 hours (healthy)
+supabase_storage_apv_local	Up 14 hours (healthy)
+supabase_rest_apv_local	Up 14 hours
+supabase_realtime_apv_local	Up 14 hours (healthy)
+supabase_inbucket_apv_local	Up 14 hours (healthy)
+supabase_auth_apv_local	Up 14 hours (healthy)
+supabase_kong_apv_local	Up 14 hours (healthy)
+supabase_vector_apv_local	Up 14 hours (healthy)
+supabase_analytics_apv_local	Up 14 hours (healthy)
+supabase_db_apv_local	Up 14 hours (healthy)
+supabase_studio_rebound	Up 14 hours (healthy)
+supabase_pg_meta_rebound	Up 14 hours (healthy)
+supabase_storage_rebound	Up 14 hours (healthy)
+supabase_rest_rebound	Up 14 hours
+supabase_realtime_rebound	Up 14 hours (healthy)
+supabase_inbucket_rebound	Up 14 hours (healthy)
+supabase_auth_rebound	Up 14 hours (healthy)
+supabase_kong_rebound	Up 14 hours (healthy)
+supabase_vector_rebound	Up 14 hours (healthy)
+supabase_analytics_rebound	Up 14 hours (healthy)
+supabase_db_rebound	Up 14 hours (healthy)
+
+===== LIVE DB INTROSPECTION (docker exec psql) =====
+Pager usage is off.
+:::LIVE_VERIFY_RPC:::
+rpc_verify_platform_constitution_v1
+{"ok": true, "seed": {"ok": true, "token": "PROTEUSOPS_PLATFORM_CONSTITUTION_OK", "constitution_key": "PROTEUSOPS_PLATFORM_CONSTITUTION_V1", "authority_pattern": ["tables", "views", "parameters", "stored_procedures", "receipts", "selftests", "audit", "runtime_integration", "marketplace_integration"], "commercial_future": {"figma_product_design": true, "stripe_payment_provider": true, "vercel_deployment_provider": true, "proteusops_entitlement_authority": true, "developer_marketplace_coming_soon": true, "cloudflare_domain_dns_ssl_provider": true}, "constitution_hash": "bcb9fcbfefdec5417501d3c87569ec7ae63b866b6df83ce0e6c98aedf337e042", "platform_identity": "governed_application_platform", "primary_user_flow": ["choose_model", "purchase_or_entitle_model", "create_account_or_org", "connect_providers", "buy_or_connect_domain", "provision_database", "run_migrations", "deploy_frontend", "operate_from_dashboard"], "constitution_version": "v1"}, "token": "PROTEUSOPS_PLATFORM_CONSTITUTION_OK", "verification_hash": "62af32b8965d81695a8a17f213610be918ee60eb8367c1f5d43670dea380eb62", "active_authority_count": 9, "planned_authority_count": 4, "platform_migration_lock_id": "47e01e74-f453-491b-a12f-462627fb83f8"}
+(1 row)
+:::SCHEMAS:::
+nspname
+pods_provisioning
+public
+(2 rows)
+:::TABLE_COUNTS_BY_SCHEMA:::
+table_schema | count
+pods_provisioning | 3
+(1 row)
+:::FUNCTION_COUNTS_BY_SCHEMA:::
+nspname | count
+pods_provisioning | 3
+(1 row)
+:::POLICY_COUNTS_BY_SCHEMA:::
+schemaname | count
+(0 rows)
+:::AUTHORITY_REGISTRY:::
+authority_key | authority_status | canonical_order | proof_token
+MODEL_REGISTRY | active | 10 | PROTEUSOPS_MODEL_TEMPLATE_REGISTRY_OK
+MARKETPLACE | active | 20 | PROTEUSOPS_MODEL_MARKETPLACE_OK
+RUNTIME_GENERATOR | active | 30 | PROTEUSOPS_MODEL_INSTANCE_RUNTIME_OK
+LAUNCH_AUTHORITY | active | 40 | PROTEUSOPS_MODEL_LAUNCH_AUTHORITY_OK
+SNAPSHOT_ENGINE | active | 50 | PROTEUSOPS_MODEL_RUNTIME_SNAPSHOT_OK
+AUDIT_LEDGER | active | 60 | PROTEUSOPS_MODEL_AUDIT_LEDGER_OK
+RELEASE_GOVERNANCE | active | 70 | PROTEUSOPS_MODEL_RELEASE_GOVERNANCE_OK
+RUNTIME_DRIFT | active | 80 | PROTEUSOPS_RUNTIME_DRIFT_OK
+DOMAIN_PROVIDER_AUTHORITY | active | 90 | PROTEUSOPS_DOMAIN_PROVIDER_AUTHORITY_OK
+DEPLOYMENT_PROVIDER_AUTHORITY | planned | 100 | PROTEUSOPS_DEPLOYMENT_PROVIDER_AUTHORITY_OK
+ENVIRONMENT_AUTHORITY | planned | 110 | PROTEUSOPS_ENVIRONMENT_AUTHORITY_OK
+BILLING_ENTITLEMENT_AUTHORITY | planned | 120 | PROTEUSOPS_BILLING_ENTITLEMENT_AUTHORITY_OK
+DEVELOPER_MARKETPLACE_AUTHORITY | planned | 130 | PROTEUSOPS_DEVELOPER_MARKETPLACE_AUTHORITY_OK
+(13 rows)
+:::MIGRATION_LOCK:::
+migration_key | migration_status | required_token | vhash16
+20260721231000_platform_constitution_v1 | verified | PROTEUSOPS_PLATFORM_CONSTITUTION_OK | 62af32b8965d8169
+(1 row)
+:::CONSTITUTION_ROW:::
+constitution_key | constitution_version | constitution_status | chash16
+PROTEUSOPS_PLATFORM_CONSTITUTION_V1 | v1 | active | bcb9fcbfefdec541
+(1 row)
+:::HISTORICAL_TABLE_PROBE:::
+pods_organizations | pods_appointments | pods_memberships | pods_subscriptions | authority_registry
+ |  |  |  | pods_provisioning.platform_authority_registry_v1
+(1 row)
+:::ALL_PODS_TABLES:::
+?column?
+pods_provisioning.platform_authority_registry_v1
+pods_provisioning.platform_constitution_versions_v1
+pods_provisioning.platform_migration_lock_v1
+(3 rows)
+:::SUPABASE_MIGRATION_HISTORY:::
+version | name
+20260721231000 | platform_constitution_v1
+(1 row)
+
+===== HOSTED CONFIG (values redacted; booleans only) =====
+supabase_url set/non-placeholder: False
+supabase_url value: https://YOUR_PROJECT.supabase.co
+service_role_key present: False
+anon_key present: False
+
+===== SUPABASE LINK / PROJECTS =====
+linked project ref file: False
+Cannot find project ref. Have you run supabase link?
+
+  
+   LINKED | ORG ID               | REFERENCE ID         | NAME        | REGION                   | CREATED AT (UTC)    
+  --------|----------------------|----------------------|-------------|--------------------------|---------------------
+          | jfeodbqfeskxqoeprxwq | ytwjyemqlbbebysiopzd | Proteus Ops | East US (Ohio)           | 2026-02-25 20:51:25 
+          | jfeodbqfeskxqoeprxwq | ofelsystgezftzamluwl | DoD Witness | East US (North Virginia) | 2026-03-11 01:19:30 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== DONE =====
+===AUDIT_COMPLETE===

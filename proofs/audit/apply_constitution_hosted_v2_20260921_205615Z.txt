@@ -1,0 +1,31 @@
+ProteusOps APPLY CONSTITUTION TO HOSTED v2  20260921_205615Z
+
+===== repair: mark stale remote-only baselines as reverted (metadata only; no schema change) =====
+Initialising login role...
+Connecting to remote database...
+Repaired migration history: [20260721222534 20260721225911] => reverted
+Finished supabase migration repair.
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+Run supabase migration list to show the updated migration history.
+
+===== migration list AFTER REVERT =====
+Initialising login role...
+Connecting to remote database...
+
+  
+   Local          | Remote         | Time (UTC)          
+  ----------------|----------------|---------------------
+   20260721230000 | 20260721230000 | 2026-07-21 23:00:00 
+   20260721231000 |                | 2026-07-21 23:10:00 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== db push (applies ONLY the constitution 20260721231000) =====
+(confirm the push when prompted; enter DB password if asked)
+Initialising login role...
+Connecting to remote database...
+Do you want to push these migrations to the remote database?
+ GÇó 20260721231000_platform_constitution_v1.sql
+System.Management.Automation.RemoteException

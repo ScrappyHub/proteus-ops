@@ -127,7 +127,9 @@ Hosted is the most advanced ProteusOps implementation by far:
 
 Critical caveats:
 
-- The constitution/governance layer is ABSENT on hosted:
+- (RESOLVED 2026-09-21 — see §9 progress log: constitution has since been applied to
+  hosted and independently verified ok:true.) As originally captured, the constitution layer
+  was ABSENT on hosted:
   `to_regclass('pods_provisioning.platform_authority_registry_v1')` = NULL and
   `platform_constitution_versions_v1` = NULL. Hosted runs the application but is NOT governed
   by the constitution.
@@ -221,3 +223,19 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
   (evidence: `proofs/audit/baseline_reset_verify_20260921_203905Z.txt`).
 - Reproducibility gap closed on LOCAL. Remaining Path A: (2) reconcile numbered
   migrations/001-048 vs the baseline; (3) apply the constitution to HOSTED (production).
+
+### 2026-09-21 — Path A phases 2 & 3 — COMPLETE
+- Phase 2: `migrations/001-048` archived to `migrations/_legacy/` (superseded by the baseline);
+  `migrations/README.md` marks the folder legacy. `supabase/migrations/` is the reproduction path.
+- Phase 3: constitution applied to HOSTED via `supabase db push`, after reconciling migration
+  history — marked baseline `20260721230000` applied on remote and reverted the stale remote-only
+  baselines `20260721222534` / `20260721225911` (metadata only; no schema dropped). Migration
+  history is now symmetric: local and remote both = [20260721230000, 20260721231000].
+- Independent hosted verification (SQL editor, not the push output): the 3 `platform_*` tables
+  present; 13 authority rows; `rpc_verify_platform_constitution_v1()` = ok:true, token
+  PROTEUSOPS_PLATFORM_CONSTITUTION_OK.
+
+### State now — Path A complete
+- HOSTED: governed (application + constitution, verified).
+- LOCAL: reproducible (`supabase db reset` rebuilds application + constitution).
+- REPO: source of truth (`supabase/migrations/` baseline + constitution; history symmetric with hosted).

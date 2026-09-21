@@ -1,0 +1,56 @@
+ProteusOps APPLY CONSTITUTION TO HOSTED  20260921_205357Z
+
+===== migration list BEFORE =====
+Initialising login role...
+Connecting to remote database...
+
+  
+   Local          | Remote         | Time (UTC)          
+  ----------------|----------------|---------------------
+                  | 20260721222534 | 2026-07-21 22:25:34 
+                  | 20260721225911 | 2026-07-21 22:59:11 
+   20260721230000 |                | 2026-07-21 23:00:00 
+   20260721231000 |                | 2026-07-21 23:10:00 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== repair: mark baseline 20260721230000 as already applied on remote =====
+Initialising login role...
+Connecting to remote database...
+Repaired migration history: [20260721230000] => applied
+Finished supabase migration repair.
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+Run supabase migration list to show the updated migration history.
+
+===== db push (applies ONLY the constitution 20260721231000) =====
+(you will be asked to confirm the push, and for the DB password if prompted)
+Initialising login role...
+Connecting to remote database...
+Remote migration versions not found in local migrations directory.
+System.Management.Automation.RemoteException
+Make sure your local git repo is up-to-date. If the error persists, try repairing the migration history table:
+supabase migration repair --status reverted 20260721222534 20260721225911
+System.Management.Automation.RemoteException
+And update local migrations to match remote database:
+supabase db pull
+System.Management.Automation.RemoteException
+
+===== migration list AFTER =====
+Initialising login role...
+Connecting to remote database...
+
+  
+   Local          | Remote         | Time (UTC)          
+  ----------------|----------------|---------------------
+                  | 20260721222534 | 2026-07-21 22:25:34 
+                  | 20260721225911 | 2026-07-21 22:59:11 
+   20260721230000 | 20260721230000 | 2026-07-21 23:00:00 
+   20260721231000 |                | 2026-07-21 23:10:00 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== DONE =====
+===APPLY_COMPLETE===

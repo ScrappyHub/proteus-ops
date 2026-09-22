@@ -101,13 +101,20 @@ RPCs above; the UI holds no authority.
 - **H5** dashboard UI.
 - **H6+** remaining providers one per slice, each with a verified matrix row.
 
-## 7. Decisions needed from the operator
-1. Is a "project" exactly a `model_instance_runtime`, or can a project exist without one
-   (e.g. a customer bringing an existing site)?
-2. Stage names/order above — keep or rename?
-3. Which three providers go first in H3?
-4. Past-due grace period (from 6e): should `past_due` move a project to `paused` immediately
-   or after N days?
+## 7. Operator decisions (2026-09-22)
+1. Project = EITHER a ProteusOps model instance OR an imported project (origin `proteus_model` |
+   `imported`; a model project must link its instance, an imported one must not).
+2. Stage names/order as in section 3 (implemented in H1 as data).
+3. H3 provider order: GitHub (GitLab shares the adapter shape, follows) -> Supabase -> Cloudflare -> AWS/SES.
+4. past_due: keep paid features for a 7-day grace window, then lapse to baseline (slice 6g;
+   `billing_in_grace` capability for a UI banner). Auto-pausing an active project after grace
+   lands with H3/H4 notifications.
+
+## 7a. Build status
+- 6g `20260922210000_billing_past_due_grace_v1` — PROTEUSOPS_BILLING_GRACE_OK (staged)
+- H1 `20260922211000_hub_lifecycle_v1` — PROTEUSOPS_HUB_LIFECYCLE_OK (staged). Evaluators live now:
+  source_linked, providers_ready, workspace_paid, owners_mfa_enrolled, reason_recorded. Declared
+  and failing closed until H2/H3: credentials_valid_live, domain_dns_ssl_verified, launch_receipt.
 
 ## 8. Guardrails
 No secret values in DB, git, logs or UI. No client-trusted authority. Every provider call

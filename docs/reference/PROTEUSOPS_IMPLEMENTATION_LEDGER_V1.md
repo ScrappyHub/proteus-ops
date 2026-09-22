@@ -248,3 +248,8 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
 - Cancel → status=canceled, paid_active=false, BUT paid plan caps retained → defect. Fix staged as 6e (20260922193000_subscription_lapse_baseline_v1): non-active/trialing falls back to baseline plan proteusops_s_v1; selftest PROTEUSOPS_SUBSCRIPTION_LAPSE_OK.
 - 6e applied to hosted. Hosted selftest PROTEUSOPS_SUBSCRIPTION_LAPSE_OK. TEST ONLY org recomputed after cancel: paid_active=false, booking_enabled=false (baseline), max_monthly_appointments removed, test.stripe_e2e override kept. STRIPE E2E PROVEN (one-time, idempotency, subscribe, cancel/downgrade).
 - 6f: lapse selftest made self-contained (temp plan tier) — 6e selftest failed on local reset only because plan seed rows exist on hosted, not local.
+
+### 2026-09-22 — Slice 7: past_due grace (6g) + Workspace Hub H1 (commit 13d28de)
+- Local verify (proofs/audit/verify_slice7_20260922_234604Z.txt) and hosted re-run: BILLING_GRACE_OK, HUB_LIFECYCLE_OK (16/16 checks), plus full regression (lapse, overrides, wrappers, one-time, idempotency, RLS fail-closed, session assurance, authority bindings, constitution) all green on both.
+- Hosted: 7 hub stages seeded, 0 leftover selftest projects.
+- Next: H2 credential refs (Vault-backed metadata) + resource inventory; then H3 adapters GitHub -> Supabase -> Cloudflare -> AWS/SES.

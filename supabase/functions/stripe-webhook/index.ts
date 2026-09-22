@@ -55,7 +55,8 @@ Deno.serve(async (req) => {
           p_provider_customer_id: obj.customer,
           p_provider_subscription_id: obj.id,
           p_status: event.type === "customer.subscription.deleted" ? "canceled" : obj.status,
-          p_plan_id: price?.id ?? "",
+          // Plan id = Price lookup_key (stable across test/live, e.g. "proteusops_sb_v1"); falls back to price.metadata.plan_id, then the raw Price id.
+          p_plan_id: price?.lookup_key ?? price?.metadata?.plan_id ?? price?.id ?? "",
           p_period_start: iso(periodStart),
           p_period_end: iso(periodEnd),
           p_cancel_at_period_end: !!obj.cancel_at_period_end,

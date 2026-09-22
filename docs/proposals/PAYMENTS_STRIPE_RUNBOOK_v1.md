@@ -34,8 +34,10 @@ Paid event grants exactly the entitled capability; spoofed/duplicate/absent even
 ## Metadata conventions (required by the edge function mapping)
 - org_id: set on the Stripe Customer AND on each Subscription / Checkout Session / PaymentIntent
   metadata as "org_id" (the ProteusOps org uuid). Subscription events read obj.metadata.org_id.
-- Subscriptions: plan_id = the Stripe Price id; seed pods.plan_capabilities with rows keyed by
-  that Price id so rpc_recompute_entitlements grants the right capabilities.
+- Subscriptions: plan_id = the Stripe Price **lookup_key** (e.g. `proteusops_sb_v1`), which must equal a
+  pods.plan_tiers.plan_id. Same key in test and live, so no Stripe ids are stored in the schema.
+  Fallbacks: price.metadata.plan_id, then the raw Price id. An unknown plan_id yields paid_active=true
+  with no plan capabilities, so always set the lookup_key when creating a Price.
 - One-time (mode=payment / payment_intent): set on the Checkout Session / PaymentIntent metadata:
   capability_key (required), value_type ("bool"|"int"|"text", default bool), and value_bool/int/text.
 - Events handled: customer.subscription.created|updated|deleted, checkout.session.completed

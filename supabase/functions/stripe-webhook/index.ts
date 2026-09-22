@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ received: true, ignored: event.type }), { headers: { "content-type": "application/json" } });
     }
   } catch (e) {
-    console.error("ingest error", event.type, String(e));
+    console.error("ingest error", event.type, JSON.stringify(e));
     return new Response("ingest error", { status: 500 }); // Stripe will retry
   }
   return new Response(JSON.stringify({ received: true, type: event.type, id: event.id }), { headers: { "content-type": "application/json" } });

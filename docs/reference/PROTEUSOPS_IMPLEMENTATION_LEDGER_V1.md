@@ -246,3 +246,5 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
 - Plan mapping: plan_id now from Price lookup_key (proteusops_sb_v1); test Price price_1UIZK6AVBD1O6C8CLuuxfoJG.
 - Subscription: sub_1UIZKYAVBD1O6C8Cvt5dWY3W (trial) → status=trialing, plan=proteusops_sb_v1, period dates set, paid_active=true, booking_enabled=true, max_monthly_appointments=200.
 - Cancel → status=canceled, paid_active=false, BUT paid plan caps retained → defect. Fix staged as 6e (20260922193000_subscription_lapse_baseline_v1): non-active/trialing falls back to baseline plan proteusops_s_v1; selftest PROTEUSOPS_SUBSCRIPTION_LAPSE_OK.
+- 6e applied to hosted. Hosted selftest PROTEUSOPS_SUBSCRIPTION_LAPSE_OK. TEST ONLY org recomputed after cancel: paid_active=false, booking_enabled=false (baseline), max_monthly_appointments removed, test.stripe_e2e override kept. STRIPE E2E PROVEN (one-time, idempotency, subscribe, cancel/downgrade).
+- 6f: lapse selftest made self-contained (temp plan tier) — 6e selftest failed on local reset only because plan seed rows exist on hosted, not local.

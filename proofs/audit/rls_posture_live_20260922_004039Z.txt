@@ -1,0 +1,54 @@
+ProteusOps RLS POSTURE (LIVE catalog) 20260922_004039Z
+Pager usage is off.
+category | client_grant | tables
+NO_RLS | f | 39
+RLS_NO_POLICY | f | 111
+RLS_WITH_POLICY | f | 9
+(3 rows)
+:::REAL_RISK_no_rls_with_client_grant:::
+?column?
+(0 rows)
+:::NO_RLS_all (defense-in-depth candidates):::
+?column?
+pods.audit_log
+pods.billing_accounts
+pods.entitlement_overrides
+pods.migration_ledger
+pods.models
+pods.org_entitlements
+pods.org_members
+pods.org_models
+pods.orgs
+pods.plan_capabilities
+pods.plan_tiers
+pods.role_permissions
+pods.roles
+pods.storefront_contact_requests
+pods.storefront_locations
+pods.storefront_profiles
+pods.storefront_service_categories
+pods.storefront_services
+pods.storefront_team_members
+pods.subscriptions
+pods.usage_counters
+pods_core.lane_boundary_selftest_vectors_v1
+pods_core.lane_contracts_v1
+pods_core.lane_negative_boundaries_v1
+pods_provisioning.asset_access_receipts_v1
+pods_provisioning.asset_runtime_objects_v1
+pods_provisioning.civic_action_survey_questions_v1
+pods_provisioning.civic_action_survey_responses_v1
+pods_provisioning.contractor_job_phases_v1
+pods_provisioning.license_key_runtime_v1
+pods_provisioning.model_runtime_drift_baselines_v1
+pods_provisioning.model_runtime_drift_findings_v1
+pods_provisioning.model_runtime_drift_reports_v1
+pods_provisioning.platform_authority_registry_v1
+pods_provisioning.platform_constitution_versions_v1
+pods_provisioning.platform_migration_lock_v1
+pods_provisioning.provider_connection_runtime_bridges_v1
+pods_public.public_surface_contracts_v1
+pods_public.public_surface_selftest_vectors_v1
+(39 rows)
+
+===DONE===

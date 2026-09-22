@@ -30,3 +30,14 @@ deployed. All secrets are provisioned by the operator, never in git.
 
 ## DoD
 Paid event grants exactly the entitled capability; spoofed/duplicate/absent event grants nothing.
+
+## Metadata conventions (required by the edge function mapping)
+- org_id: set on the Stripe Customer AND on each Subscription / Checkout Session / PaymentIntent
+  metadata as "org_id" (the ProteusOps org uuid). Subscription events read obj.metadata.org_id.
+- Subscriptions: plan_id = the Stripe Price id; seed pods.plan_capabilities with rows keyed by
+  that Price id so rpc_recompute_entitlements grants the right capabilities.
+- One-time (mode=payment / payment_intent): set on the Checkout Session / PaymentIntent metadata:
+  capability_key (required), value_type ("bool"|"int"|"text", default bool), and value_bool/int/text.
+- Events handled: customer.subscription.created|updated|deleted, checkout.session.completed
+  (mode=payment), payment_intent.succeeded. Duplicate deliveries are rejected idempotently
+  (payment_events / one_time_receipt unique guards).

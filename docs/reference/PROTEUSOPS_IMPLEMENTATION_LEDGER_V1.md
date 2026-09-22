@@ -239,3 +239,10 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
 - HOSTED: governed (application + constitution, verified).
 - LOCAL: reproducible (`supabase db reset` rebuilds application + constitution).
 - REPO: source of truth (`supabase/migrations/` baseline + constitution; history symmetric with hosted).
+
+### 2026-09-22 — Stripe end-to-end proof (hosted, sandbox test mode, TEST ONLY org 984f0130…)
+- 6d: service_role-only public wrappers for the ingest RPCs (PostgREST resolves public only). Applied + deployed.
+- One-time: evt_3UIYlnAVBD1O6C8C3epeM8LJ (pi_3UIYln…) → 200; resent twice → receipts=1, audit=1, override test.stripe_e2e, has_cap=true. Idempotent.
+- Plan mapping: plan_id now from Price lookup_key (proteusops_sb_v1); test Price price_1UIZK6AVBD1O6C8CLuuxfoJG.
+- Subscription: sub_1UIZKYAVBD1O6C8Cvt5dWY3W (trial) → status=trialing, plan=proteusops_sb_v1, period dates set, paid_active=true, booking_enabled=true, max_monthly_appointments=200.
+- Cancel → status=canceled, paid_active=false, BUT paid plan caps retained → defect. Fix staged as 6e (20260922193000_subscription_lapse_baseline_v1): non-active/trialing falls back to baseline plan proteusops_s_v1; selftest PROTEUSOPS_SUBSCRIPTION_LAPSE_OK.

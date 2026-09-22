@@ -1,0 +1,36 @@
+ProteusOps APPLY SECURITY BATCH TO HOSTED 20260922_123014Z
+
+===== migration list BEFORE =====
+Initialising login role...
+Connecting to remote database...
+
+  
+   Local          | Remote         | Time (UTC)          
+  ----------------|----------------|---------------------
+   20260721230000 | 20260721230000 | 2026-07-21 23:00:00 
+   20260721231000 | 20260721231000 | 2026-07-21 23:10:00 
+   20260921211500 |                | 2026-09-21 21:15:00 
+   20260921212000 |                | 2026-09-21 21:20:00 
+   20260921212500 |                | 2026-09-21 21:25:00 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== migration list AFTER =====
+Initialising login role...
+Connecting to remote database...
+
+  
+   Local          | Remote         | Time (UTC)          
+  ----------------|----------------|---------------------
+   20260721230000 | 20260721230000 | 2026-07-21 23:00:00 
+   20260721231000 | 20260721231000 | 2026-07-21 23:10:00 
+   20260921211500 | 20260921211500 | 2026-09-21 21:15:00 
+   20260921212000 | 20260921212000 | 2026-09-21 21:20:00 
+   20260921212500 | 20260921212500 | 2026-09-21 21:25:00 
+
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===DONE===
+===APPLY_COMPLETE===

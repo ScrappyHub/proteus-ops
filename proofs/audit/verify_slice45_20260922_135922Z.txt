@@ -1,0 +1,42 @@
+ProteusOps VERIFY slices 4+5 (LOCAL) 20260922_135922Z
+
+===== supabase db reset (full chain) =====
+Resetting local database...
+Recreating database...
+Initialising schema...
+Seeding globals from roles.sql...
+Applying migration 20260721230000_hosted_baseline_v1.sql...
+Applying migration 20260721231000_platform_constitution_v1.sql...
+NOTICE (42P06): schema "pods_provisioning" already exists, skipping
+NOTICE (42P06): schema "extensions" already exists, skipping
+NOTICE (42710): extension "pgcrypto" already exists, skipping
+Applying migration 20260921211500_harden_function_search_path_v1.sql...
+NOTICE (00000): PROTEUSOPS_HARDEN_SEARCH_PATH: set fixed search_path on 1 functions
+Applying migration 20260921212000_rls_fail_closed_v1.sql...
+NOTICE (00000): PROTEUSOPS_RLS_FAIL_CLOSED: enabled RLS on 39 base tables
+Applying migration 20260921212500_session_assurance_v1.sql...
+Applying migration 20260922124000_payment_idempotency_v1.sql...
+Applying migration 20260922124500_authority_binding_v1.sql...
+WARN: no files matched pattern: supabase/seed.sql
+Restarting containers...
+Finished supabase db reset on branch payments/entitlement-v1.
+A new version of Supabase CLI is available: v2.117.0 (currently installed v2.67.1)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+===== POST-RESET CHECKS =====
+Pager usage is off.
+:::PAYMENT_IDEMPOTENCY:::
+rpc_selftest_payment_idempotency_v1
+{"ok": true, "token": "PROTEUSOPS_PAYMENT_IDEMPOTENCY_OK", "events_unique_index": 1, "receipts_unique_constraint": 1}
+(1 row)
+:::AUTHORITY_BINDINGS:::
+rpc_verify_authority_bindings_v1
+{"ok": true, "token": "PROTEUSOPS_AUTHORITY_BINDINGS_OK", "missing_objects": [], "missing_bindings": [], "active_authorities": 9, "active_authorities_backed": 9}
+(1 row)
+:::REGRESSION:::
+rls | sess | constitution_ok
+PROTEUSOPS_RLS_FAIL_CLOSED_OK | PROTEUSOPS_SESSION_ASSURANCE_OK | true
+(1 row)
+
+===DONE===
+===VERIFY_COMPLETE===

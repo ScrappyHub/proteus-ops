@@ -120,3 +120,15 @@ RPCs above; the UI holds no authority.
 No secret values in DB, git, logs or UI. No client-trusted authority. Every provider call
 server-side with least-privilege scopes. Test and live credentials never share a ref.
 No hosted change without approval.
+
+## 7b. Build status (2026-09-23)
+- H1b `20260923012000_hub_structure_v1` — LIVE. Nested systems/projects, accounts, account links and
+  dependencies with required justifications, impact queries. PROTEUSOPS_HUB_STRUCTURE_OK.
+- H2 `20260923030000_hub_credentials_resources_v1` — staged. Credentials as Vault references (metadata only in
+  ProteusOps tables; value write-only for clients; service-role read audited with purpose-of-use), MFA on every
+  credential change, 400-day max rotation, live credentials must rotate, effective status
+  (pending/valid/stale/expiring/expired/invalid/revoked), revoke and workspace-delete destroy the Vault secret.
+  Resource inventory (manual + service discovery sync with missing detection; secret-looking attributes refused).
+  Launch gate `credentials_valid_live` now real. PROTEUSOPS_HUB_CREDENTIALS_OK (27 checks).
+- Next: H3 change feed + adapters (GitHub -> Supabase -> Cloudflare -> AWS/SES) using svc_hub_credential_secret_v1,
+  svc_hub_credential_mark_verified_v1, svc_hub_resource_sync_v1.

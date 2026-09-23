@@ -17,7 +17,7 @@ $fails = ([regex]::Matches($txt, 'PROTEUSOPS_[A-Z_]+_FAIL(?![A-Z_])')).Count + (
 $oks = ([regex]::Matches($txt, '(?m)^PROTEUSOPS_[A-Z_]+_OK\s*$')).Count
 Log "`nfail_or_error_count=$fails ok_tokens=$oks"
 Write-Host ("VERIFY_OUTPUT=" + $out); Write-Host ("FAIL_OR_ERROR_COUNT=" + $fails + "  OK_TOKENS=" + $oks)
-if ($fails -ne 0 -or $oks -lt 15) { Write-Host "!!! NOT APPLYING: local verification is not fully green. Send the VERIFY_OUTPUT file."; exit 1 }
+if ($fails -ne 0 -or $oks -lt 16) { Write-Host "!!! NOT APPLYING: local verification is not fully green. Send the VERIFY_OUTPUT file."; exit 1 }
 Write-Host ">>> [2/2] all green. Pushing pending migrations to HOSTED. Answer 'y' at the prompt."
 supabase db push
 Log "`npush exit code: $LASTEXITCODE"

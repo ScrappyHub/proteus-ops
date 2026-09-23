@@ -90,6 +90,7 @@ function mapEvent(name: string, p: any): Ev | null {
 }
 
 Deno.serve(async (req) => {
+  try {
   if (req.method !== "POST") return new Response("method not allowed", { status: 405 });
   const accountId = new URL(req.url).searchParams.get("account") ?? "";
   if (!UUID.test(accountId)) return new Response("unauthorized", { status: 401 });
@@ -129,6 +130,14 @@ Deno.serve(async (req) => {
     p_account_id: accountId,
     p_events: [{ ...ev, dedupe_key: `gh:${delivery}`, source: "webhook", occurred_at: ev.occurred_at ?? new Date().toISOString() }],
   });
-  if (error) { console.error("ingest error", eventName, delivery, error.message); return new Response("ingest error", { status: 500 }); }
+  if (error) {
+    console.error("ingest error", eventName, delivery, error.message, error.details, error.hint);
+    // Only the signature-verified sender (GitHub) sees this; it carries a DB error code/constraint name, never data.
+    return json({ ok: false, error: "ingest", code: error.code, message: String(error.message ?? "").slice(0, 300) }, 500);
+  }
   return json({ ok: true, event: eventName, result: data });
+  } catch (e) {
+    console.error("unhandled", String(e));
+    return json({ ok: false, error: "unhandled", message: String((e as Error)?.message ?? e).slice(0, 300) }, 500);
+  }
 });

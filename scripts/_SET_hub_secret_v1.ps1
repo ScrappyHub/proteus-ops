@@ -44,7 +44,10 @@ function Call-Rpc([string]$fn, [hashtable]$body, [string]$key) {
   $h = @{ apikey = $key; "Content-Type" = "application/json"; Prefer = "return=representation" }
   if ($key.StartsWith("eyJ")) { $h["Authorization"] = "Bearer $key" }   # legacy JWT service_role key
   try {
-    return Invoke-RestMethod -Method Post -Uri "$base/$fn" -Headers $h -Body ($body | ConvertTo-Json -Compress)
+    # Explicit non-browser User-Agent: Windows PowerShell's default UA starts with "Mozilla/5.0", which Supabase
+    # (correctly) treats as a browser and refuses for secret keys.
+    return Invoke-RestMethod -Method Post -Uri "$base/$fn" -Headers $h -UserAgent "ProteusOps-Operator/1.0 (PowerShell)" `
+      -Body ([Text.Encoding]::UTF8.GetBytes(($body | ConvertTo-Json -Compress)))
   } catch {
     $msg = $_.ErrorDetails.Message; if (-not $msg) { $msg = $_.Exception.Message }
     throw "RPC $fn failed: $msg"
@@ -52,7 +55,30 @@ function Call-Rpc([string]$fn, [hashtable]$body, [string]$key) {
 }
 
 Write-Host "Supabase dashboard -> Project Settings -> API Keys: copy the SECRET / service_role key (it is not echoed)."
-$svc = (Read-Secret "Service key").Trim()
+$raw = Read-Secret "Service key"
+$svc = $raw.Trim()
+# If extra text came along with the key (quotes, "KEY=", labels, a second copy...), pull out just the key.
+$m = [regex]::Match($raw, 'sb_secret_[A-Za-z0-9_\-]{10,}')
+if (-not $m.Success) { $m = [regex]::Match($raw, 'eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+') }
+if ($m.Success -and $m.Value.Length -ne $svc.Length) {
+  Write-Host ("note       : pasted text was " + $raw.Length + " chars; extracted the key (" + $m.Value.Length + " chars) and ignored the rest.")
+  $svc = $m.Value
+}
+if (-not $m.Success) {
+  $hasSpace = $raw -match '\s'; $hasQuote = $raw -match '["'']'
+  Write-Host ("diagnostic : length=" + $raw.Length + ", contains whitespace=" + $hasSpace + ", contains quotes=" + $hasQuote + ", contains 'sb_publishable_'=" + ($raw -match 'sb_publishable_'))
+}
+# A doubled paste (right-click + Ctrl+V, or pasting twice) produces the key twice in a row.
+foreach ($pfx in @("sb_secret_", "eyJ")) {
+  $i = $svc.IndexOf($pfx, 1)
+  if ($svc.StartsWith($pfx) -and $i -gt 0) {
+    $first = $svc.Substring(0, $i); $rest = $svc.Substring($i)
+    if ($rest -eq $first) { Write-Host ("note       : the key was pasted twice (" + $svc.Length + " chars); using one copy (" + $first.Length + " chars).") }
+    else { Write-Host ("note       : found more than one key in the paste; using the first (" + $first.Length + " chars).") }
+    $svc = $first; break
+  }
+}
+$raw = $null
 # Sanity-check the key WITHOUT printing it: only its kind, role and project are shown.
 if ($svc.StartsWith("eyJ")) {
   $parts = $svc.Split(".")
@@ -83,6 +109,10 @@ try {
   if ($secret.Length -lt 8) { throw "Secret too short." }
   $secret2 = Read-Secret "Type it again to confirm"
   if ($secret -ne $secret2) { throw "The two entries do not match; nothing was stored." }
+  if ($secret.Length % 2 -eq 0 -and $secret.Substring(0, $secret.Length/2) -eq $secret.Substring($secret.Length/2)) {
+    throw "The secret looks pasted twice in a row (length $($secret.Length)). Paste once (right-click OR Ctrl+V, not both); nothing was stored."
+  }
+  Write-Host ("secret     : length=" + $secret.Length + " (check this matches what you generated, e.g. 64 for 'openssl rand -hex 32')")
   $rot = (Get-Date).ToUniversalTime().AddDays($RotateInDays).ToString("o")
   $res = Call-Rpc "svc_hub_credential_put_v1" @{ p_account_id = $acct.account_id; p_purpose = $Purpose; p_environment = $Environment;
             p_secret_value = $secret; p_rotates_at = $rot; p_justification = $Justification; p_operator = $operator } $svc

@@ -111,8 +111,12 @@ Deno.serve(async (req) => {
   const expected = "sha256=" + (await hmacHex(secret, body));
   if (!safeEq(expected, sig)) return new Response("unauthorized", { status: 401 });
 
+  // GitHub signs the raw body for both content types; "application/x-www-form-urlencoded" wraps the JSON in payload=.
   let payload: any;
-  try { payload = JSON.parse(body); } catch { return new Response("bad json", { status: 400 }); }
+  try {
+    const ct = req.headers.get("content-type") ?? "";
+    payload = JSON.parse(ct.includes("application/x-www-form-urlencoded") ? (new URLSearchParams(body).get("payload") ?? "") : body);
+  } catch { return new Response("bad payload", { status: 400 }); }
 
   if (eventName === "ping") {
     await sb.rpc("svc_hub_credential_mark_verified_v1", { p_credential_id: target.credential_id, p_ok: true,

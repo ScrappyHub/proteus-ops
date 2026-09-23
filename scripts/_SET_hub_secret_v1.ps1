@@ -29,7 +29,10 @@ param(
   [ValidateSet('test','live')] [string] $Environment = "test",
   [ValidateRange(1,400)] [int] $RotateInDays = 90,
   [string] $Justification = "",
-  [string] $ProjectRef = "ytwjyemqlbbebysiopzd"
+  [string] $ProjectRef = "ytwjyemqlbbebysiopzd",
+  # Generate a fresh random secret (32 bytes, 64 hex chars) instead of typing one. It is stored in Vault and
+  # copied to the clipboard ONCE so you can paste it into the provider (e.g. GitHub webhook "Secret"); never printed.
+  [switch] $Generate
 )
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -105,9 +108,19 @@ try {
   }
   if ($Purpose -eq "none") { return }
   if ($Justification.Trim().Length -lt 10) { throw "-Justification must be at least 10 characters (why this secret exists)." }
-  $secret = Read-Secret "Secret value for '$Purpose' ($Environment)"
-  if ($secret.Length -lt 8) { throw "Secret too short." }
-  $secret2 = Read-Secret "Type it again to confirm"
+  if ($Generate) {
+    $bytes = New-Object byte[] 32
+    $rng = [Security.Cryptography.RandomNumberGenerator]::Create(); $rng.GetBytes($bytes); $rng.Dispose()
+    $secret = -join ($bytes | ForEach-Object { $_.ToString("x2") }); $secret2 = $secret
+    [Array]::Clear($bytes, 0, $bytes.Length)
+  } else {
+    $secret = Read-Secret "Secret value for '$Purpose' ($Environment)"
+    if ($secret.Length -lt 8) { throw "Secret too short." }
+    $secret2 = Read-Secret "Type it again to confirm"
+  }
+  if ($secret -match '^(whsec_|sk_(live|test)_|rk_(live|test)_|sb_secret_|ghp_|github_pat_)') {
+    throw "That value is another service's secret ($($Matches[1])...). Every integration needs its own unique secret; use -Generate. Nothing was stored."
+  }
   if ($secret -ne $secret2) { throw "The two entries do not match; nothing was stored." }
   if ($secret.Length % 2 -eq 0 -and $secret.Substring(0, $secret.Length/2) -eq $secret.Substring($secret.Length/2)) {
     throw "The secret looks pasted twice in a row (length $($secret.Length)). Paste once (right-click OR Ctrl+V, not both); nothing was stored."
@@ -117,6 +130,11 @@ try {
   $res = Call-Rpc "svc_hub_credential_put_v1" @{ p_account_id = $acct.account_id; p_purpose = $Purpose; p_environment = $Environment;
             p_secret_value = $secret; p_rotates_at = $rot; p_justification = $Justification; p_operator = $operator } $svc
   Write-Host ("credential : " + $res.credential_id + "  " + $res.action + "  fingerprint " + $res.fingerprint + "  rotates " + $rot.Substring(0,10))
+  if ($Generate) {
+    Set-Clipboard -Value $secret
+    Write-Host "clipboard  : the new secret is on your clipboard. Paste it into the provider now (GitHub: webhook -> Secret),"
+    Write-Host "             then copy any ordinary text to clear the clipboard."
+  }
   Write-Host "Status is pending_verification until the provider proves it (GitHub: the webhook 'ping' / a sync run)."
 } finally {
   $svc = $null; $secret = $null; $secret2 = $null; [GC]::Collect()

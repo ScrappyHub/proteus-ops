@@ -4,6 +4,7 @@ on:
   pull_request:
 permissions:
   contents: read
+  packages: read
 jobs:
   secret-scan:
     runs-on: ubuntu-latest
@@ -18,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with: { version: 2.67.1 }
+      - name: log in to ghcr.io (authenticated pulls avoid anonymous rate limits)
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: "start db and apply all migrations (retries on registry rate limits)"
         run: |
           for i in 1 2 3 4 5 6; do

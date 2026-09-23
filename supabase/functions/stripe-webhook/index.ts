@@ -102,19 +102,21 @@ Deno.serve(async (req) => {
         if (obj.payment_status !== "paid") return json({ received: true, ignored: "not paid yet" }, 202);
         const productKey = obj?.metadata?.product_key;
         if (!orgId || !productKey) return json({ received: true, ignored: "missing org_id/product_key metadata" }, 202);
-        await call("rpc_grant_one_time_purchase_v2", {
+        const r = await call("rpc_grant_one_time_purchase_v2", {
           p_org_id: orgId, p_provider_payment_id: obj.payment_intent ?? obj.id, p_product_key: productKey,
           p_amount_minor: obj.amount_total, p_currency: obj.currency, p_event: event,
         });
+        if (r?.rejected) { console.error("grant rejected", event.id, r.rejected); return json({ received: true, rejected: r.rejected }); }
         break;
       }
       case "payment_intent.succeeded": {
         const productKey = obj?.metadata?.product_key;
         if (!orgId || !productKey) return json({ received: true, ignored: "no product metadata" }, 202);
-        await call("rpc_grant_one_time_purchase_v2", {
+        const r = await call("rpc_grant_one_time_purchase_v2", {
           p_org_id: orgId, p_provider_payment_id: obj.id, p_product_key: productKey,
           p_amount_minor: obj.amount_received, p_currency: obj.currency, p_event: event,
         });
+        if (r?.rejected) { console.error("grant rejected", event.id, r.rejected); return json({ received: true, rejected: r.rejected }); }
         break;
       }
       case "charge.refunded": {

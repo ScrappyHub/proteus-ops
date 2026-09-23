@@ -261,3 +261,10 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
 - Edge function hardened (S3) in repo; ci/ci.yml (S4) awaiting move to .github/workflows.
 - Operator settings applied by Claude with approval: Stripe test destination now 8 events (added checkout.session.async_payment_succeeded, charge.refunded, charge.dispute.created); Auth: min password 10 + upper/lower/digit/symbol, secure password change + current password required; Data API "automatically expose new tables" OFF. AAL1 session limit was already ON.
 - Still operator-owned (needs credentials): Google OAuth client, CAPTCHA provider keys. Leaked-password protection needs Supabase Pro.
+
+### 2026-09-23 — Hosted proof after audit-v2 apply (commit 586d431)
+- Hosted: all 15 selftest tokens OK (API_SURFACE, BILLING_INTEGRITY, HUB_STRUCTURE, NO_UNBACKED_TRIALS, BILLING_GRACE, HUB_LIFECYCLE, SUBSCRIPTION_LAPSE, ENTITLEMENT_OVERRIDES, STRIPE_INGEST_WRAPPERS, ONE_TIME_ENTITLEMENT, PAYMENT_IDEMPOTENCY, RLS_FAIL_CLOSED, SESSION_ASSURANCE, AUTHORITY_BINDINGS, constitution ok). 0 leftover selftest orgs.
+- demo-barber: bootstrap trial canceled -> paid_active=false, booking_enabled=false (baseline).
+- Catalog e2e (Stripe sandbox, TEST ONLY product test-catalog-e2e $15): pi_3UIiKSAVBD1O6C8C3Tsb0mqm ($15) -> granted test.catalog_e2e, receipt with product/amount, no PII stored. pi_3UIiKCAVBD1O6C8C213rBO9F ($10 underpayment) -> NOT granted, no receipt.
+- Defect found: rejection audit row rolled back with the raised exception. Fix staged: 20260923020000_one_time_rejections_recorded_v1 (record + return {rejected}), webhook updated.
+- Pending: refund e2e on pi_3UIiKSAVBD1O6C8C3Tsb0mqm (expect revoke), GitHub CI result.

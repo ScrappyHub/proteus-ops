@@ -268,3 +268,7 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
 - Catalog e2e (Stripe sandbox, TEST ONLY product test-catalog-e2e $15): pi_3UIiKSAVBD1O6C8C3Tsb0mqm ($15) -> granted test.catalog_e2e, receipt with product/amount, no PII stored. pi_3UIiKCAVBD1O6C8C213rBO9F ($10 underpayment) -> NOT granted, no receipt.
 - Defect found: rejection audit row rolled back with the raised exception. Fix staged: 20260923020000_one_time_rejections_recorded_v1 (record + return {rejected}), webhook updated.
 - Pending: refund e2e on pi_3UIiKSAVBD1O6C8C3Tsb0mqm (expect revoke), GitHub CI result.
+- 2026-09-23 (cont.): S2b applied to hosted (commit 76e3f0e; local 15/15 OK before push). Hosted BILLING_INTEGRITY_OK.
+- Refund e2e: re_3UIiKSAVBD1O6C8C3a61ZEbm on pi_3UIiKSAVBD1O6C8C3Tsb0mqm -> receipt revoked=refund, test.catalog_e2e removed, audit entitlement.one_time_revoke; legacy test.stripe_e2e (different receipt) untouched.
+- STRIPE PROOF COMPLETE: subscribe, cancel/downgrade, grace, stale/out-of-order, customer binding, catalog grant, underpayment reject, refund revoke, idempotency, no PII.
+- CI: run 1 (586d431) green; run 2 (9e99b4b) red as expected (pre-fix selftest); run 3 (76e3f0e) see below.

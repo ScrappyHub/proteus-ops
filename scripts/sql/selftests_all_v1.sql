@@ -4,12 +4,14 @@ select pods_core.rpc_selftest_api_surface_v1();
 select pods.rpc_selftest_billing_integrity_v1();
 select pods_provisioning.rpc_selftest_hub_structure_v1();
 select pods_provisioning.rpc_selftest_hub_credentials_v1();
+select pods_provisioning.rpc_selftest_hub_feed_v1();
 \echo :::ALL_TOKENS:::
 select t from (values
   (pods_core.rpc_selftest_api_surface_v1()->>'token'),
   (pods.rpc_selftest_billing_integrity_v1()->>'token'),
   (pods_provisioning.rpc_selftest_hub_structure_v1()->>'token'),
   (pods_provisioning.rpc_selftest_hub_credentials_v1()->>'token'),
+  (pods_provisioning.rpc_selftest_hub_feed_v1()->>'token'),
   (pods.rpc_selftest_no_unbacked_trials_v1()->>'token'),
   (pods.rpc_selftest_billing_grace_v1()->>'token'),
   (pods_provisioning.rpc_selftest_hub_lifecycle_v1()->>'token'),

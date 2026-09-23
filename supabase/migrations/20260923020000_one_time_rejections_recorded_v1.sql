@@ -41,7 +41,7 @@ declare v_sfx text := replace(gen_random_uuid()::text,'-',''); v_org uuid; v_org
   t_stale bool := false; t_tie bool := false; t_terminal bool := false; t_bind_cus bool := false; t_bind_org bool := false;
   t_unknown_plan bool := false; t_cat_unknown bool := false; t_cat_under bool := false; t_cat_currency bool := false;
   t_cat_ok bool := false; t_refund bool := false; t_refund_idem bool := false; t_multi bool := false; t_pii bool := false; v_ok bool;
-  ev jsonb;
+  ev jsonb; rj jsonb;
 begin
   insert into pods.plan_tiers(plan_id, name, is_active) values (v_plan, 'selftest plan', true);
   insert into pods.plan_capabilities(plan_id, capability_key, value_type, value_bool) values (v_plan, 'selftest.plan_feature', 'bool', true);
@@ -83,13 +83,17 @@ begin
     and (select count(*) from pods.org_entitlements e where e.org_id = v_org2 and e.source = 'plan')
       = (select count(*) from pods.plan_capabilities where plan_id = 'proteusops_s_v1' and capability_key not in ('paid_active','billing_in_grace'));
   -- catalog
-  t_cat_unknown := pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_u_'||v_sfx, 'no-such-product', 2000, 'usd', '{}'::jsonb)->>'rejected' = 'ONE_TIME_UNKNOWN_PRODUCT'
-    and exists (select 1 from pods.audit_log where org_id = v_org and action_key = 'entitlement.one_time_unknown_product');
-  t_cat_under := pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_l_'||v_sfx, v_prod, 1999, 'usd', '{}'::jsonb)->>'rejected' = 'ONE_TIME_AMOUNT_MISMATCH'
-    and not coalesce(pods.has_cap_bool(v_org,'selftest.addon'), false)
+  -- NOTE: call and check in SEPARATE statements; a statement's snapshot cannot see rows its own volatile calls insert.
+  rj := pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_u_'||v_sfx, 'no-such-product', 2000, 'usd', '{}'::jsonb);
+  t_cat_unknown := rj->>'rejected' = 'ONE_TIME_UNKNOWN_PRODUCT';
+  t_cat_unknown := t_cat_unknown and exists (select 1 from pods.audit_log where org_id = v_org and action_key = 'entitlement.one_time_unknown_product');
+  rj := pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_l_'||v_sfx, v_prod, 1999, 'usd', '{}'::jsonb);
+  t_cat_under := rj->>'rejected' = 'ONE_TIME_AMOUNT_MISMATCH';
+  t_cat_under := t_cat_under and not coalesce(pods.has_cap_bool(v_org,'selftest.addon'), false)
     and not exists (select 1 from pods_provisioning.one_time_purchase_receipts_v1 where provider_payment_id = 'pi_l_'||v_sfx);
-  t_cat_currency := pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_c_'||v_sfx, v_prod, 2000, 'eur', '{}'::jsonb)->>'rejected' = 'ONE_TIME_AMOUNT_MISMATCH'
-    and (select count(*) from pods.audit_log where org_id = v_org and action_key = 'entitlement.one_time_amount_mismatch') = 2;
+  rj := pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_c_'||v_sfx, v_prod, 2000, 'eur', '{}'::jsonb);
+  t_cat_currency := rj->>'rejected' = 'ONE_TIME_AMOUNT_MISMATCH';
+  t_cat_currency := t_cat_currency and (select count(*) from pods.audit_log where org_id = v_org and action_key = 'entitlement.one_time_amount_mismatch') = 2;
   perform pods.rpc_grant_one_time_purchase_v2(v_org, 'pi_a_'||v_sfx, v_prod, 2000, 'USD',
           jsonb_build_object('id','evt_pi','type','payment_intent.succeeded','created',t0,'data',jsonb_build_object('object',jsonb_build_object('receipt_email','pii@example.com'))));
   t_cat_ok := coalesce(pods.has_cap_bool(v_org,'selftest.addon'),false);

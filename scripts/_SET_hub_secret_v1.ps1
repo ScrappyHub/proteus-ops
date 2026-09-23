@@ -52,8 +52,23 @@ function Call-Rpc([string]$fn, [hashtable]$body, [string]$key) {
 }
 
 Write-Host "Supabase dashboard -> Project Settings -> API Keys: copy the SECRET / service_role key (it is not echoed)."
-$svc = Read-Secret "Service key"
-if ($svc.Length -lt 20) { throw "That does not look like a service key." }
+$svc = (Read-Secret "Service key").Trim()
+# Sanity-check the key WITHOUT printing it: only its kind, role and project are shown.
+if ($svc.StartsWith("eyJ")) {
+  $parts = $svc.Split(".")
+  if ($parts.Count -ne 3) { throw "Key looks truncated or has extra text (a service_role JWT has exactly 3 dot-separated parts). Copy it again." }
+  $p = $parts[1].Replace('-', '+').Replace('_', '/'); while ($p.Length % 4) { $p += "=" }
+  $claims = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p)) | ConvertFrom-Json
+  Write-Host ("key check  : legacy JWT, role=" + $claims.role + ", project=" + $claims.ref + ", length=" + $svc.Length)
+  if ($claims.role -ne "service_role") { throw "This is the '$($claims.role)' key. Use the service_role key (Settings -> API Keys -> Legacy API keys -> service_role, click Reveal)." }
+  if ($claims.ref -ne $ProjectRef) { throw "This key belongs to project '$($claims.ref)', not '$ProjectRef'. Open the Proteus Ops project in the Supabase dashboard and copy its key." }
+} elseif ($svc.StartsWith("sb_secret_")) {
+  Write-Host ("key check  : new-style secret key, length=" + $svc.Length + " (must be from project $ProjectRef)")
+} elseif ($svc.StartsWith("sb_publishable_")) {
+  throw "That is the publishable (public) key. Use a SECRET key (sb_secret_...) or the legacy service_role key."
+} else {
+  throw "Unrecognised key format (length $($svc.Length)). Expected 'eyJ...' (legacy service_role) or 'sb_secret_...'. Copy only the key, nothing else."
+}
 $operator = "$env:USERNAME@$env:COMPUTERNAME"
 try {
   $acct = Call-Rpc "svc_hub_account_ensure_v1" @{ p_org_slug = $Workspace; p_provider_key = $Provider; p_display_name = $AccountName;

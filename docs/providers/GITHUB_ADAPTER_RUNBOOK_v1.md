@@ -1,5 +1,12 @@
 # GitHub adapter runbook v1 (Workspace Hub H3)
 
+> **Where secrets go (no dashboard yet):** run `scripts/_SET_hub_secret_v1.ps1`. It prompts for the Supabase
+> service key and the secret without echoing, sends them only to Supabase over TLS, stores the secret in Vault,
+> and prints back an id + fingerprint. Never put a secret in git, in a file, in the SQL editor, or in chat.
+> The `rpc_hub_*` names below are database functions (called by the future dashboard), not web links.
+> The webhook URL is POST-only: opening it in a browser correctly answers "method not allowed".
+
+
 Two edge functions, one database contract. Nothing about GitHub is stored in git; all secrets are hub
 credentials held in Supabase Vault and read only by these functions (every read is audited).
 

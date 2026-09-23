@@ -25,4 +25,4 @@ jobs:
           PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -A -t -v ON_ERROR_STOP=1 \
             -f scripts/sql/selftests_all_v1.sql | tee selftests.txt
           if grep -E 'PROTEUSOPS_[A-Z_]+_FAIL($|[^A-Z_])' selftests.txt; then echo "SELFTEST FAILURE"; exit 1; fi
-          test "$(grep -cE '^PROTEUSOPS_[A-Z_]+_OK$' selftests.txt)" -ge 17
+          test "$(grep -cE '^PROTEUSOPS_[A-Z_]+_OK$' selftests.txt)" -ge 18

@@ -253,3 +253,11 @@ Expected token: `PROTEUSOPS_PLATFORM_CONSTITUTION_OK`.
 - Local verify (proofs/audit/verify_slice7_20260922_234604Z.txt) and hosted re-run: BILLING_GRACE_OK, HUB_LIFECYCLE_OK (16/16 checks), plus full regression (lapse, overrides, wrappers, one-time, idempotency, RLS fail-closed, session assurance, authority bindings, constitution) all green on both.
 - Hosted: 7 hub stages seeded, 0 leftover selftest projects.
 - Next: H2 credential refs (Vault-backed metadata) + resource inventory; then H3 adapters GitHub -> Supabase -> Cloudflare -> AWS/SES.
+
+### 2026-09-23 — Security audit v2 + hub structure (operator approved "yes to all")
+- Audit: docs/reference/SECURITY_AUDIT_2026-09-22_v2.md (C1 critical bootstrap self-grant, H1-H3 billing, M1-M7, L1-L5).
+- Local verify of S1+S2: all 13 tokens OK (proofs/audit/verify_slice8_security_20260923_000125Z.txt; the "2" count was a regex false positive on RLS_FAIL_CLOSED — fixed).
+- Staged: 20260923010000 security_api_surface (S1), 20260923011000 billing_integrity (S2), 20260923012000 hub_structure (H1b: nested systems/projects, accounts, dependencies + justifications), 20260923013000 remediate_bootstrap_trials (cancels demo-barber unbacked trial).
+- Edge function hardened (S3) in repo; ci/ci.yml (S4) awaiting move to .github/workflows.
+- Operator settings applied by Claude with approval: Stripe test destination now 8 events (added checkout.session.async_payment_succeeded, charge.refunded, charge.dispute.created); Auth: min password 10 + upper/lower/digit/symbol, secure password change + current password required; Data API "automatically expose new tables" OFF. AAL1 session limit was already ON.
+- Still operator-owned (needs credentials): Google OAuth client, CAPTCHA provider keys. Leaked-password protection needs Supabase Pro.

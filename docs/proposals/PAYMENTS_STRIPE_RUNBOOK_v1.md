@@ -43,3 +43,17 @@ Paid event grants exactly the entitled capability; spoofed/duplicate/absent even
 - Events handled: customer.subscription.created|updated|deleted, checkout.session.completed
   (mode=payment), payment_intent.succeeded. Duplicate deliveries are rejected idempotently
   (payment_events / one_time_receipt unique guards).
+
+## One-time products (since security slice S2/S3, 2026-09-23)
+- Capabilities are NEVER read from Stripe metadata any more. Define each sellable item once in
+  `pods_provisioning.one_time_catalog_v1` (product_key, capability_key, value, amount_minor, currency, active).
+- On the Checkout Session (and `payment_intent_data.metadata`) set `org_id` and `product_key`.
+  The DB grants only if the product exists, is active, and amount_paid >= amount_minor in the same currency.
+- Checkout grants only when `payment_status = 'paid'` (async methods: `checkout.session.async_payment_succeeded`).
+- Full refund (`charge.refunded`, refunded=true) or dispute (`charge.dispute.created`) revokes the grant;
+  if another unrevoked purchase of the same capability exists, the capability stays.
+- Webhook destination events: customer.subscription.created/updated/deleted, checkout.session.completed,
+  checkout.session.async_payment_succeeded, payment_intent.succeeded, charge.refunded, charge.dispute.created.
+- Optional secret `EXPECT_LIVEMODE=true` on the live project rejects test-mode events.
+- Subscription ingest ignores stale/out-of-order events, never resurrects a canceled subscription, and
+  refuses to attach a Stripe customer to a second workspace.

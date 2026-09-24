@@ -14,3 +14,6 @@ scripts/_patch/*.bak_*
 proteus.config.json
 *.local.json
 !proteus.config.example.json
+
+# local-only captures (hosted data dumps etc.) - never commit
+_local_private/

@@ -11,5 +11,7 @@ Get-Content -Raw -LiteralPath (Join-Path $RepoRoot "scripts\sql\pod_pipeline_aud
   docker exec -i supabase_db_proteusops psql -U postgres -d postgres -v ON_ERROR_STOP=0 2>&1 |
   ForEach-Object { Add-Content -LiteralPath $out -Value $_ }
 $txt = Get-Content -Raw -LiteralPath $out
-$i = $txt.IndexOf(":::POD_AUDIT_SUMMARY:::"); if ($i -ge 0) { Write-Host $txt.Substring($i, [Math]::Min(400, $txt.Length - $i)) }
+$i = $txt.IndexOf(":::POD_AUDIT_SUMMARY:::"); $j = $txt.IndexOf(":::POD_AUDIT_PASS:::")
+if ($i -ge 0) { if ($j -gt $i) { Write-Host $txt.Substring($i, $j - $i) } else { Write-Host $txt.Substring($i) } }
+$g = [regex]::Match($txt, "POD_AUDIT_TOTAL=\d+ POD_AUDIT_NON_PASS_COUNT=\d+"); if ($g.Success) { Write-Host $g.Value }
 Write-Host ("AUDIT_OUTPUT=" + $out); Write-Host "===POD_AUDIT_COMPLETE==="

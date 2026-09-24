@@ -18,6 +18,18 @@ $oks = ([regex]::Matches($txt, '(?m)^PROTEUSOPS_[A-Z_]+_OK\s*$')).Count
 Log "`nfail_or_error_count=$fails ok_tokens=$oks"
 Write-Host ("VERIFY_OUTPUT=" + $out); Write-Host ("FAIL_OR_ERROR_COUNT=" + $fails + "  OK_TOKENS=" + $oks)
 if ($fails -ne 0 -or $oks -lt 19) { Write-Host "!!! NOT APPLYING: local verification is not fully green. Send the VERIFY_OUTPUT file."; exit 1 }
+Write-Host ">>> [1b/2] deployment-pod pipeline audit (every pods* selftest/verify must PASS) ..."
+$podSql = Get-Content -Raw -LiteralPath (Join-Path $RepoRoot "scripts\sql\pod_pipeline_audit_v1.sql")
+Log "`n===== POD PIPELINE AUDIT ====="
+$podOut = @($podSql | docker exec -i $C psql -U postgres -d postgres -v ON_ERROR_STOP=0 2>&1)
+$podOut | ForEach-Object { Log $_ }
+$podTxt = ($podOut -join "`n")
+$pg = [regex]::Match($podTxt, "POD_AUDIT_TOTAL=(\d+) POD_AUDIT_NON_PASS_COUNT=(\d+)")
+if (-not $pg.Success -or [int]$pg.Groups[2].Value -ne 0 -or [int]$pg.Groups[1].Value -lt 50) {
+  $a = $podTxt.IndexOf(":::POD_AUDIT_NON_PASS:::"); $b = $podTxt.IndexOf(":::POD_AUDIT_PASS:::")
+  if ($a -ge 0 -and $b -gt $a) { Write-Host $podTxt.Substring($a, $b - $a) }
+  Write-Host ("!!! NOT APPLYING: pod audit not fully green (" + $pg.Value + "). Send the VERIFY_OUTPUT file."); exit 1 }
+Write-Host $pg.Value
 Write-Host ">>> [2/2] all green. Pushing pending migrations to HOSTED. Answer 'y' at the prompt."
 supabase db push
 Log "`npush exit code: $LASTEXITCODE"

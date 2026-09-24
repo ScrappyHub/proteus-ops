@@ -28,9 +28,17 @@ jobs:
             echo "db start attempt $i failed; backing off $((i*20))s"; supabase stop --no-backup || true; sleep $((i*20))
           done
           exit 1
+      - name: load reference seed (idempotent; ON CONFLICT DO NOTHING)
+        run: PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -v ON_ERROR_STOP=1 -q -f supabase/seed.sql
       - name: run selftests
         run: |
           PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -A -t -v ON_ERROR_STOP=1 \
             -f scripts/sql/selftests_all_v1.sql | tee selftests.txt
           if grep -E 'PROTEUSOPS_[A-Z_]+_FAIL($|[^A-Z_])' selftests.txt; then echo "SELFTEST FAILURE"; exit 1; fi
           test "$(grep -cE '^PROTEUSOPS_[A-Z_]+_OK$' selftests.txt)" -ge 19
+      - name: deployment-pod pipeline audit (every pods* selftest/verify must PASS)
+        run: |
+          PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -v ON_ERROR_STOP=1 \
+            -f scripts/sql/pod_pipeline_audit_v1.sql | tee pod_audit.txt
+          grep -q 'POD_AUDIT_NON_PASS_COUNT=0$' pod_audit.txt || { echo "POD AUDIT FAILURE"; sed -n '/POD_AUDIT_NON_PASS/,/POD_AUDIT_PASS/p' pod_audit.txt; exit 1; }
+          grep -qE 'POD_AUDIT_TOTAL=([5-9][0-9]|[1-9][0-9]{2,})' pod_audit.txt || { echo "POD AUDIT RAN TOO FEW FUNCTIONS"; exit 1; }

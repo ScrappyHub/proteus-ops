@@ -118,7 +118,13 @@ try {
     if ($secret.Length -lt 8) { throw "Secret too short." }
     $secret2 = Read-Secret "Type it again to confirm"
   }
-  if ($secret -match '^(whsec_|sk_(live|test)_|rk_(live|test)_|sb_secret_|ghp_|github_pat_)') {
+  # What this provider+purpose expects. Anything that looks like a DIFFERENT service's secret is refused.
+  $expect = $null
+  if ($Provider -eq "github" -and $Purpose -eq "api") { $expect = "github_pat_" }
+  if ($expect) {
+    if ($secret -like "ghp_*") { throw "That is a CLASSIC GitHub token (ghp_...), which has broad scopes. Create a FINE-GRAINED token (github_pat_...) with Metadata: read-only. Nothing was stored." }
+    if (-not $secret.StartsWith($expect)) { throw "Expected a value starting with '$expect' for $Provider/$Purpose. Nothing was stored." }
+  } elseif ($secret -match '^(whsec_|sk_(live|test)_|rk_(live|test)_|sb_secret_|ghp_|github_pat_)') {
     throw "That value is another service's secret ($($Matches[1])...). Every integration needs its own unique secret; use -Generate. Nothing was stored."
   }
   if ($secret -ne $secret2) { throw "The two entries do not match; nothing was stored." }

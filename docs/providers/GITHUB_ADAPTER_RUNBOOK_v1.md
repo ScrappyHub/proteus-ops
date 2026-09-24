@@ -29,13 +29,19 @@ Unknown account, missing credential and bad signature all return the same 401 (n
 Deliveries are idempotent on `X-GitHub-Delivery`. Payloads that look like they contain secrets are rejected and audited.
 
 ## 3. Discovery sync (resource inventory + API credential verification)
-1. Create a **fine-grained** GitHub token: resource owner = the org/user, repository access = all (or selected),
-   permissions: Metadata **read-only** (nothing else needed). Expiry ≤ 90 days.
-2. Store it: `rpc_hub_credential_put_v1(account_id, null, 'api', ..., 'vault', '<token>', null, <rotates_at = token expiry>, '<justification>')`.
-3. Invoke (service role only): `POST https://ytwjyemqlbbebysiopzd.functions.supabase.co/github-sync` with
-   `Authorization: Bearer <service_role key>` (body `{}` or `{"account_id":"..."}`).
+1. Create a **fine-grained** GitHub token (github.com -> Settings -> Developer settings -> Personal access tokens ->
+   Fine-grained tokens): resource owner = the org/user, repository access = all (or selected),
+   permissions: Repository -> **Metadata: read-only** (nothing else). Expiry <= 90 days. Classic `ghp_` tokens are refused.
+2. Store it (prompts; never echoed or written anywhere):
+   `powershell -ExecutionPolicy Bypass -File .\scripts\_SET_hub_secret_v1.ps1 -Workspace <slug> -Provider github -AccountName "<name>" -ExternalRef <org/user> -Purpose api -Environment test -RotateInDays 90 -Justification "Read-only GitHub token for repository inventory"`
+3. Sync runs automatically every 30 minutes once the scheduler is set up (one-time, no secret involved, SQL editor):
+   `select pods_provisioning.svc_hub_sync_setup_v1('https://ytwjyemqlbbebysiopzd.functions.supabase.co', true);`
+   The database generates a 256-bit machine key, keeps it only in Vault, and pg_cron + pg_net call `github-sync`
+   with it (`x-proteus-sync-key`). No person handles that key. Rotate any time by re-running the setup.
+   Run once now: `select pods_provisioning._hub_sync_dispatch_v1('github');`  then check (a few seconds later):
+   `select pods_provisioning.svc_hub_sync_status_v1();`
    Repos are upserted into the inventory; repos no longer returned are marked **missing** (a `resource.missing`
-   event appears in the feed). 200 → credential valid; 401/403 → credential **invalid** (critical if live).
+   event appears in the feed). 200 -> credential valid; 401/403 -> credential **invalid** (critical if live).
 
 ## 4. What shows up in the feed
 push / force-push (warning) / branch deleted, PR opened/merged/closed, releases, deploy success/failure,

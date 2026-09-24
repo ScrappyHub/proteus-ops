@@ -17,7 +17,7 @@ $fails = ([regex]::Matches($txt, 'PROTEUSOPS_[A-Z_]+_FAIL(?![A-Z_])')).Count + (
 $oks = ([regex]::Matches($txt, '(?m)^PROTEUSOPS_[A-Z_]+_OK\s*$')).Count
 Log "`nfail_or_error_count=$fails ok_tokens=$oks"
 Write-Host ("VERIFY_OUTPUT=" + $out); Write-Host ("FAIL_OR_ERROR_COUNT=" + $fails + "  OK_TOKENS=" + $oks)
-if ($fails -ne 0 -or $oks -lt 20) { Write-Host "!!! NOT APPLYING: local verification is not fully green. Send the VERIFY_OUTPUT file."; exit 1 }
+if ($fails -ne 0 -or $oks -lt 21) { Write-Host "!!! NOT APPLYING: local verification is not fully green. Send the VERIFY_OUTPUT file."; exit 1 }
 Write-Host ">>> [1b/2] deployment-pod pipeline audit (every pods* selftest/verify must PASS) ..."
 $podSql = Get-Content -Raw -LiteralPath (Join-Path $RepoRoot "scripts\sql\pod_pipeline_audit_v1.sql")
 Log "`n===== POD PIPELINE AUDIT ====="

@@ -7,16 +7,16 @@ permissions:
   packages: read
 jobs:
   secret-scan:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
       - name: gitleaks (full history)
         run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.18.4 detect --source /repo --redact -v
   db-selftests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: supabase/setup-cli@v1
         with: { version: 2.67.1 }
       - name: log in to ghcr.io (authenticated pulls avoid anonymous rate limits)
@@ -35,7 +35,7 @@ jobs:
           PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -A -t -v ON_ERROR_STOP=1 \
             -f scripts/sql/selftests_all_v1.sql | tee selftests.txt
           if grep -E 'PROTEUSOPS_[A-Z_]+_FAIL($|[^A-Z_])' selftests.txt; then echo "SELFTEST FAILURE"; exit 1; fi
-          test "$(grep -cE '^PROTEUSOPS_[A-Z_]+_OK$' selftests.txt)" -ge 19
+          test "$(grep -cE '^PROTEUSOPS_[A-Z_]+_OK$' selftests.txt)" -ge 20
       - name: deployment-pod pipeline audit (every pods* selftest/verify must PASS)
         run: |
           PGPASSWORD=postgres psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -v ON_ERROR_STOP=1 \

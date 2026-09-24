@@ -7,6 +7,7 @@ select pods_provisioning.rpc_selftest_hub_credentials_v1();
 select pods_provisioning.rpc_selftest_hub_feed_v1();
 select pods_provisioning.rpc_selftest_hub_operator_v1();
 select pods_provisioning.rpc_selftest_hub_feed_urls_v1();
+select pods_provisioning.rpc_selftest_hub_pod_link_v1();
 \echo :::ALL_TOKENS:::
 select t from (values
   (pods_core.rpc_selftest_api_surface_v1()->>'token'),
@@ -19,6 +20,7 @@ select t from (values
   (pods.rpc_selftest_no_unbacked_trials_v1()->>'token'),
   (pods.rpc_selftest_billing_grace_v1()->>'token'),
   (pods_provisioning.rpc_selftest_hub_lifecycle_v1()->>'token'),
+  (pods_provisioning.rpc_selftest_hub_pod_link_v1()->>'token'),
   (pods.rpc_selftest_subscription_lapse_v1()->>'token'),
   (pods.rpc_selftest_entitlement_overrides_v1()->>'token'),
   (pods_provisioning.rpc_selftest_stripe_ingest_wrappers_v1()->>'token'),

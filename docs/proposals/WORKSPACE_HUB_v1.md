@@ -132,3 +132,24 @@ No hosted change without approval.
   Launch gate `credentials_valid_live` now real. PROTEUSOPS_HUB_CREDENTIALS_OK (27 checks).
 - Next: H3 change feed + adapters (GitHub -> Supabase -> Cloudflare -> AWS/SES) using svc_hub_credential_secret_v1,
   svc_hub_credential_mark_verified_v1, svc_hub_resource_sync_v1.
+
+## 7c. Build status (2026-09-24) — hub linked to the deployment pods (H4)
+
+- Pod pipeline audit: all 107 pods* selftest/verify functions PASS on a fresh local DB with the reference seed; the
+  audit now blocks both the verify-then-apply gate and CI (`POD_AUDIT_NON_PASS_COUNT=0` required).
+- `20260924020000_hub_pod_link_v1`:
+  - one hub project per model instance (unique link; cross-workspace link refused);
+  - `domain_dns_ssl_verified` evaluates real evidence — model projects: a pod domain binding with DNS verified + SSL
+    active and none failed/blocked; imported projects: a LIVE domain resource reported by provider discovery
+    (manual entries never count; lands for real with the Cloudflare adapter);
+  - `launch_receipt` — model projects: a completed pod launch receipt while the launch authority and instance are
+    still `launched` (suspend/archive revokes it); imported projects: an unrevoked owner launch attestation
+    (`rpc_hub_launch_attest_v1`: owner only, MFA/aal2, stage launch_review/active, https evidence, justification,
+    hashed, audited, revocable);
+  - pod launch/suspend/archive and domain attach/verify/fail events flow into the hub change feed
+    (critical when the project is `active`);
+  - `rpc_hub_project_pod_status_v1`: one member-only read of instance, launch receipts, domains, attestations,
+    provider readiness, launch-control decision, and the next stage's gate evaluation.
+- Known pod limitation (tracked): `rpc_verify_domain_dns_v1` / `rpc_verify_domain_ssl_v1` mark status without a live
+  DNS/TLS probe. They are service_role-only; the Cloudflare adapter slice replaces them with provider-verified results.
+- Selftest token `PROTEUSOPS_HUB_POD_LINK_OK` (gate and CI now require 20 tokens).
